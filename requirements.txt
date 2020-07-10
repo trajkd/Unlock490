@@ -1,0 +1,6 @@
+webapp2
+webob
+jinja2
+boto3
+datetime
+paste

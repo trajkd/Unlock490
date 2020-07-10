@@ -1,0 +1,26 @@
+<div id="nav">
+    <div><a href="#login" id="back"><i class="fas fa-arrow-left"></i></a></div>
+    <h1>Primo accesso</h1>
+    <div></div>
+</div>
+<div class="row">
+    <div class="col-md-10 col-lg-8 mx-auto">
+        <form action="/" method="post" id="signupForm" name="signup" enctype="multipart/form-data">
+            <div class="control-group">
+                <p>Inserisci nel campo “Username” il codice indicato sulla card che ti ha fornito il centro ospedaliero presso cui hai deciso di ritirare la tua terapia HIV.</p>
+                <div class="form-group floating-label-form-group controls"><label>Userame</label><input class="form-control" type="text" id="username" name="username" placeholder="Userame"><small class="form-text text-danger help-block"></small></div>
+            </div>
+            <div class="control-group">
+                <p>Scegli una password composta da almeno 8 caratteri, di cui almeno una lettera maiuscola e un numero.</p>
+                <div class="form-group floating-label-form-group controls"><label>Password</label><input class="form-control" type="password" id="password" name="password" placeholder="Password"><small class="form-text text-danger help-block"></small></div>
+                <div class="right"><span id="doubts">Dubbi sulla password?</span></div>
+            </div>
+            <div id="success"></div>
+            <div class="form-group"><button class="btn btn-primary btn-success" id="signupButton" type="button">Registrati</button></div>
+        </form>
+    </div>
+</div>
+<div class="identity">
+    <img class="logo-small" src="../static/img/logo.png">
+    <h2 class="tagline-small">Closer • Faster • Safer</h2>
+</div>
