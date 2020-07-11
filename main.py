@@ -263,6 +263,10 @@ class VerifyPhoneHandler(webapp2.RequestHandler):
                         email_error = "That's not a valid email."
                 self.write_form(username, email, username_error, password_error, verify_error, email_error)
 
+class TutorialHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('tutorial.html').render())
+
 class SuccessHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('success.html').render())
@@ -387,6 +391,7 @@ app = webapp2.WSGIApplication([
         ('/', MainPage),
         ('/index', MainPage),
         ('/index.html', MainPage),
+        ('/tutorial', TutorialHandler),
         ('/login', LoginHandler),
         ('/logout', LogoutHandler),
         ('/signup', SignupHandler),

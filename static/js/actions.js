@@ -3,8 +3,8 @@ $(document).on("click", "#sidebarCollapse", function() {
 });
 
 $(window).on('load', function() {
-	$.ajax($('.container').load("/login")).done(function() {
-		document.title = 'Accesso - Unlock490';
+	$.ajax($('.container').load("/tutorial")).done(function() {
+		document.title = 'Tutorial - Unlock490';
 		$("#loader").hide();
 	});
     return false;
@@ -17,6 +17,7 @@ function getContent(fragmentId, callback){
   var pages = {
   	home: "/login",
     login: "/login",
+    tutorial: "/tutorial",
     signup: "/signup",
     emailphonesignup: "/emailphonesignup",
     verifyemail: "/verifyemail",
@@ -294,5 +295,17 @@ $(document).on("click", "#confirmpickupButton", function() {
 $(document).on("click", "#modifypickupButton", function() {
 	location.hash = "#pickup";
 	document.title = 'Ritiro - Unlock490';
+    return false;
+});
+
+$(document).on("click", "#skipButton", function() {
+	location.hash = "#login";
+	document.title = 'Accesso - Unlock490';
+    return false;
+});
+
+$(document).on("click", "#closetutorial", function() {
+	location.hash = "#login";
+	document.title = 'Accesso - Unlock490';
     return false;
 });
