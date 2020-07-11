@@ -95,6 +95,86 @@ blockquote {
   align-items: center;
 }
 
+#sidebarCollapse {
+  padding: 0; 
+}
+
+.wrapper {
+    display: flex;
+    overflow: auto;
+    align-items: stretch;
+}
+
+#sidebar {
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 250px;
+    max-width: 250px;
+    right: -250px;
+    display: block;
+    position: fixed;
+    z-index: 1;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+#sidebar.active {
+    right: 0;
+}
+
+body {
+    background: #fafafa;
+}
+
+a, a:hover, a:focus {
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+#sidebar {
+    background: #3163ab;
+    color: #fff;
+    transition: all 0.3s;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #003480;
+}
+
+#sidebar .sidebar-header h3 {
+    color: #fff;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: #003480;
+    background: #fff;
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: #003480;
+}
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: #6d7fcc;
+}
+
 .option {
   padding: 30px;
 }
@@ -114,12 +194,61 @@ blockquote {
   margin: 0;
 }
 
-.logo, .logo-small {
+.logo {
+  width: 80%;
+}
+
+.tagline {
+  margin-bottom: 40px;
+}
+
+.logo-small {
   width: 100%;
 }
 
 .tagline-small {
   font-size: 10px;
+}
+
+#hospitalDetails {
+  position: relative;
+  display: flex;
+  text-align: left;
+}
+
+#infoButton {
+  height: fit-content;
+  margin: auto;
+}
+
+#dayChooser {
+  display: flex;
+  text-align: center;
+}
+
+#filterDays {
+  margin: 10px;
+}
+
+#filterDays .btn2 {
+  width: 100%;
+}
+
+#filterDays .btn2:hover {
+  color: #fff;
+  background-color: #023784;
+  transition: all 0.4s;
+}
+
+#filterDays .active {
+  color: #fff;
+  background-color: #023784;
+}
+
+#finalchoice {
+  display: flex;
+  text-align: center;
+  justify-content: space-between;
 }
 
 #loader {
@@ -599,8 +728,15 @@ div .copyright {
   width: 100%;
   font-size: 20px;
   font-weight: 800;
-  padding: 15px 25px;
-  margin-top: 40px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 0;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.btn2 {
+  font-size: 20px;
+  font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
   border-radius: 0;
