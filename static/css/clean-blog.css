@@ -96,7 +96,9 @@ blockquote {
 }
 
 #sidebarCollapse {
-  padding: 0; 
+  padding: 0;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 .wrapper {
@@ -176,7 +178,7 @@ ul ul a {
 }
 
 .option {
-  padding: 30px;
+  padding: 20px 0;
 }
 
 .control-group {
@@ -194,12 +196,20 @@ ul ul a {
   margin: 0;
 }
 
+#calendar{
+  padding: .5rem 1rem;
+}
+
 .logo {
   width: 80%;
 }
 
 .tagline {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+}
+
+.option {
+  cursor: pointer;
 }
 
 .logo-small {
@@ -208,6 +218,7 @@ ul ul a {
 
 .tagline-small {
   font-size: 10px;
+  padding-bottom: 30px;
 }
 
 #hospitalDetails {
@@ -256,11 +267,29 @@ ul ul a {
   top: 20px;
   right: 20px;
   z-index: 99;
+  cursor: pointer;
+}
+
+svg {
+  overflow: visible;
+}
+
+#skipButton {
+  cursor: pointer;
+  margin-bottom: 40px;
+}
+
+#loginButton {
+  margin-top: 20px;
 }
 
 .swiper-container {
   width: 100%;
-  height: 600px;
+  height: 500px;
+}
+
+.swiper-slide {
+  margin-top: 60px;
 }
 
 .description {

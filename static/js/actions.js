@@ -1,8 +1,9 @@
-$(document).on("click", "#sidebarCollapse", function() {
+$(document).on("click touch", "#sidebarCollapse", function() {
     $('#sidebar').toggleClass('active');
 });
 
 $(window).on('load', function() {
+	location.hash = "#tutorial";
 	$.ajax($('.container').load("/tutorial")).done(function() {
 		document.title = 'Tutorial - Unlock490';
 		$("#loader").hide();
@@ -59,91 +60,91 @@ loadContent();
 
 window.addEventListener("hashchange", loadContent)
 
-$(document).on("click", "#signup", function() {
+$(document).on("click touch", "#signup", function() {
     location.hash = "#signup";
     document.title = 'Iscrizione - Unlock490';
     return false;
 });
 
-$(document).on("click", "#signupButton", function() {
+$(document).on("click touch", "#signupButton", function() {
 	location.hash = "#emailphonesignup";
 	document.title = 'Dati aggiuntivi - Unlock490';
     return false;
 });
 
-$(document).on("click", "#emailphonesignupButton", function() {
+$(document).on("click touch", "#emailphonesignupButton", function() {
 	location.hash = "#verifyemail";
 	document.title = 'Verifica email - Unlock490';
     return false;
 });
 
-$(document).on("click", "#verifyemailButton", function() {
+$(document).on("click touch", "#verifyemailButton", function() {
 	location.hash = "#verifyphone";
 	document.title = 'Verifica cellulare - Unlock490';
     return false;
 });
 
-$(document).on("click", "#verifyphoneButton", function() {
+$(document).on("click touch", "#verifyphoneButton", function() {
 	location.hash = "#success";
 	document.title = 'Iscrizione terminata - Unlock490';
     return false;
 });
 
-$(document).on("click", "#loginButton", function() {
+$(document).on("click touch", "#loginButton", function() {
 	location.hash = "#menu";
 	document.title = 'Menu - Unlock490';
     return false;
 });
 
-$(document).on("click", "#doubts", function() {
+$(document).on("click touch", "#doubts", function() {
 	location.hash = "#doubts";
 	document.title = 'Dubbi sulla password - Unlock490';
     return false;
 });
 
-$(document).on("click", "#newpassword", function() {
+$(document).on("click touch", "#newpassword", function() {
 	location.hash = "#newpassword";
 	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
-$(document).on("click", "#recoveryButton", function() {
+$(document).on("click touch", "#recoveryButton", function() {
 	location.hash = "#verifyemailforrecovery";
 	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
-$(document).on("click", "#verifyemailforrecoveryButton", function() {
+$(document).on("click touch", "#verifyemailforrecoveryButton", function() {
 	location.hash = "#verifyphoneforrecovery";
 	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
-$(document).on("click", "#verifyphoneforrecoveryButton", function() {
+$(document).on("click touch", "#verifyphoneforrecoveryButton", function() {
 	location.hash = "#choosenewpassword";
 	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
-$(document).on("click", "#choosepasswordButton", function() {
+$(document).on("click touch", "#choosepasswordButton", function() {
 	location.hash = "#recoverysuccess";
 	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
-$(document).on("click", "#toLogin", function() {
+$(document).on("click touch", "#toLogin", function() {
 	location.hash = "#login";
 	document.title = 'Accesso - Unlock490';
     return false;
 });
 
-$(document).on("click", "#profile", function() {
+$(document).on("click touch", "#profile", function() {
 	location.hash = "#profile";
 	document.title = 'Profilo - Unlock490';
     return false;
 });
 
-$(document).on("click", "#pickup", function() {
+$(document).on("click touch", "#pickup", function() {
 	if (pickupconfirmed) {
 		location.hash = "#readyforpickup";
 	} else {
@@ -153,25 +154,25 @@ $(document).on("click", "#pickup", function() {
 	return false;
 });
 
-$(document).on("click", "#therapy", function() {
+$(document).on("click touch", "#therapy", function() {
 	location.hash = "#therapy";
 	document.title = 'Terapia - Unlock490';
     return false;
 });
 
-$(document).on("click", "#notifications", function() {
+$(document).on("click touch", "#notifications", function() {
 	location.hash = "#notifications";
 	document.title = 'Notifiche - Unlock490';
     return false;
 });
 
-$(document).on("click", "#guide", function() {
+$(document).on("click touch", "#guide", function() {
 	location.hash = "#guide";
 	document.title = 'Guida - Unlock490';
     return false;
 });
 
-$(document).on("click", "#settings", function() {
+$(document).on("click touch", "#settings", function() {
 	location.hash = "#settings";
 	document.title = 'Impostazioni - Unlock490';
     return false;
@@ -186,7 +187,7 @@ $(document).on("click", "#settings", function() {
     //              }
     // });
 
-$(document).on("click", "#filterAllDays", function() {
+$(document).on("click touch", "#filterAllDays", function() {
 	$('#filterAllDays').addClass('active');
 	$('#filterCurrentWeek').removeClass('active');
     $('#filterNextWeek').removeClass('active');
@@ -198,7 +199,7 @@ $(document).on("click", "#filterAllDays", function() {
     $("#available-day6").show();
 });
 
-$(document).on("click", "#filterCurrentWeek", function() {
+$(document).on("click touch", "#filterCurrentWeek", function() {
     $('#filterAllDays').removeClass('active');
 	$('#filterCurrentWeek').addClass('active');
     $('#filterNextWeek').removeClass('active');
@@ -210,7 +211,7 @@ $(document).on("click", "#filterCurrentWeek", function() {
     $("#available-day6").hide();
 });
 
-$(document).on("click", "#filterNextWeek", function() {
+$(document).on("click touch", "#filterNextWeek", function() {
     $('#filterAllDays').removeClass('active');
 	$('#filterCurrentWeek').removeClass('active');
     $('#filterNextWeek').addClass('active');
@@ -222,13 +223,13 @@ $(document).on("click", "#filterNextWeek", function() {
     $("#available-day6").show();
 });
 
-$(document).on("click", ".available-day", function() {
+$(document).on("click touch", ".available-day", function() {
 	location.hash = "#pickuphour";
 	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
-$(document).on("click", "#filterAllHours", function() {
+$(document).on("click touch", "#filterAllHours", function() {
 	$('#filterAllHours').addClass('active');
 	$('#filterAM').removeClass('active');
     $('#filterPM').removeClass('active');
@@ -245,7 +246,7 @@ $(document).on("click", "#filterAllHours", function() {
     $("#available-hour11").show();
 });
 
-$(document).on("click", "#filterAM", function() {
+$(document).on("click touch", "#filterAM", function() {
     $('#filterAllHours').removeClass('active');
 	$('#filterAM').addClass('active');
     $('#filterPM').removeClass('active');
@@ -262,7 +263,7 @@ $(document).on("click", "#filterAM", function() {
     $("#available-hour11").hide();
 });
 
-$(document).on("click", "#filterPM", function() {
+$(document).on("click touch", "#filterPM", function() {
     $('#filterAllHours').removeClass('active');
 	$('#filterAM').removeClass('active');
     $('#filterPM').addClass('active');
@@ -279,32 +280,32 @@ $(document).on("click", "#filterPM", function() {
     $("#available-hour11").show();
 });
 
-$(document).on("click", ".available-hour", function() {
+$(document).on("click touch", ".available-hour", function() {
 	location.hash = "#confirmpickup";
 	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
-$(document).on("click", "#confirmpickupButton", function() {
+$(document).on("click touch", "#confirmpickupButton", function() {
 	pickupconfirmed = true;
 	location.hash = "#readyforpickup";
 	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
-$(document).on("click", "#modifypickupButton", function() {
+$(document).on("click touch", "#modifypickupButton", function() {
 	location.hash = "#pickup";
 	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
-$(document).on("click", "#skipButton", function() {
+$(document).on("click touch", "#skipButton", function() {
 	location.hash = "#login";
 	document.title = 'Accesso - Unlock490';
     return false;
 });
 
-$(document).on("click", "#closetutorial", function() {
+$(document).on("click touch", "#closetutorial", function() {
 	location.hash = "#login";
 	document.title = 'Accesso - Unlock490';
     return false;
