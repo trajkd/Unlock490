@@ -1,6 +1,6 @@
 <div id="nav">
     <div><a href="#menu" id="back"><i class="fas fa-arrow-left"></i></a></div>
-    <h1 id="sectiontitle">Ritiro prenotato</h1>
+    <h1 id="sectiontitle">Notifiche</h1>
     <div id="content">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
@@ -19,7 +19,7 @@
 
         <ul class="list-unstyled components">
             <li>
-                <a id="menu" href="#menu">Home</a>
+                <a id="#menu" href="#menu">Home</a>
             </li>
             <li>
                 <a id="calendar" href="#calendar">Calendario</a>
@@ -27,10 +27,10 @@
             <li>
                 <a id="profile" href="#profile">Profilo</a>
             </li>
-            <li class="active">
+            <li>
                 <a id="pickup" href="#pickup">Ritiro</a>
             </li>
-            <li>
+            <li class="active">
                 <a id="therapy" href="#therapy">Terapia</a>
             </li>
             <li>
@@ -45,21 +45,9 @@
         </ul>
     </nav>
 </div>
-<div id="hospitalDetails">
-    <div id="hospitalNameAddress">
-        <p><b>Azienda Ospedaliera Antonio Cardarelli </b></p>
-        <p>Via A. Cardarelli 9, 80131 Napoli</p>
-    </div>
-    <button class="btn2" id="infoButton" type="button">INFO</button>
-</div>
-<p>Orario scelto</p>
-<p><b>8 Febbraio 2021</b></p>
-<p><b>13:30</b></p>
-<div id="pickupcode">
-    <p>Mostra il QR Code</p>
-    <img src="../static/img/qrcode.png" style="width: 80vw">
-    <p>opppure digita il codice</p>
-    <p><b>AXY247WEKST</b></p>
+<div class="panel-group" id="accordion">
+    <a href="#readyforpickup" id="readyforpickup"><p>Prossima terapia da ritirare il giorno 8 Febbraio 2021 alle ore 13:30</p></a>
+    <p>Ultima terapia ritirata il giorno 14 Dicembre 2020 alle ore 11:30</p>
 </div>
 <div class="identity">
     <img class="logo-small" src="../static/img/logo.png">

@@ -120,6 +120,15 @@ blockquote {
   -webkit-text-stroke: 4px #fafafa;
 }
 
+.fa-angle-down {
+  transition: all 0.4s;
+}
+
+#comingevents {
+  border: 2px solid black;
+  background-color: #e3eaff;
+}
+
 .btn.active.focus,
 .btn.active:focus,
 .btn.focus,
@@ -203,7 +212,7 @@ a, a:hover, a:focus {
     background: #fff;
 }
 
-#sidebar ul li.active > a, a[aria-expanded="true"] {
+#sidebar ul li.active > a {
     color: #fff;
     background: #003480;
 }
@@ -236,6 +245,11 @@ ul ul a {
   padding: .5rem 1rem;
 }
 
+#alert {
+  border-radius: 0 0 15px 15px;
+  background-color: red;
+}
+
 .logo {
   width: 80%;
 }
@@ -265,6 +279,12 @@ ul ul a {
 }
 
 #hospitalDetails {
+  position: relative;
+  display: flex;
+  text-align: left;
+}
+
+.comingevent {
   position: relative;
   display: flex;
   text-align: left;
@@ -323,6 +343,13 @@ ul ul a {
   cursor: pointer;
 }
 
+#tutoriallogo {
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%)
+}
+
 .fa-times {
   font-size: 40px;
   -webkit-text-stroke: 4px #fafafa;
@@ -369,6 +396,10 @@ svg {
 
 #profileNameCF {
   margin-left: 10px;
+}
+
+.active-item {
+  background-color: #0048af;
 }
 
 #loader {

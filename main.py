@@ -339,9 +339,21 @@ class SettingsHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('settings.html').render())
 
+class CalendarHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('calendar.html').render())
+
 class HospitalInfoHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('hospitalinfo.html').render())
+
+class ExampleTherapiesHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('exampletherapies.html').render())
+
+class ExampleNotificationsHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('examplenotifications.html').render())
 
 def render_str(template, **params):
                 t = jinja_env.get_template(template)
@@ -419,6 +431,9 @@ app = webapp2.WSGIApplication([
         ('/notifications', NotificationsHandler),
         ('/guide', GuideHandler),
         ('/settings', SettingsHandler),
+        ('/calendar', CalendarHandler),
         ('/hospitalinfo', HospitalInfoHandler),
+        ('/exampletherapies', ExampleTherapiesHandler),
+        ('/examplenotifications', ExampleNotificationsHandler),
         (r'/static/(.+)', StaticFileHandler)
 ], debug = True)

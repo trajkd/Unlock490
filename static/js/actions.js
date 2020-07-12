@@ -12,6 +12,8 @@ $(window).on('load', function() {
 });
 
 var pickupconfirmed = false;
+var rotated = false;
+var loggedin = false;
 
 function getContent(fragmentId, callback){
 
@@ -39,8 +41,11 @@ function getContent(fragmentId, callback){
     profile: "/profile",
     therapy: "/therapy",
     notifications: "/notifications",
-    guide: "/guide",
-    settings: "/settings"
+    guide: "/tutorial",
+    settings: "/settings",
+    calendar: "/calendar",
+    examplenotifications: "/examplenotifications",
+    exampletherapies: "/exampletherapies"
   };
 
   callback(pages[fragmentId]);
@@ -53,6 +58,9 @@ function loadContent(){
   getContent(fragmentId, function (content) {
     $.ajax($('.container').load(content)).done(function() {
     	$("#loader").hide();
+    	if (pickupconfirmed) {
+			$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+		}
     });
   });
 
@@ -97,8 +105,12 @@ $(document).on("click touch", "#verifyphoneButton", function() {
 });
 
 $(document).on("click touch", "#loginButton", function() {
+	loggedin = true;
 	location.hash = "#menu";
 	document.title = 'Menu - Unlock490';
+	if (pickupconfirmed) {
+		$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+	}
     return false;
 });
 
@@ -139,8 +151,19 @@ $(document).on("click touch", "#choosepasswordButton", function() {
 });
 
 $(document).on("click touch", "#toLogin", function() {
+	loggedin = false;
 	location.hash = "#login";
 	document.title = 'Accesso - Unlock490';
+    return false;
+});
+
+$(document).on("click touch", "#menu", function() {
+	loggedin = true;
+	location.hash = "#menu";
+	document.title = 'Menu - Unlock490';
+	if (pickupconfirmed) {
+		$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+	}
     return false;
 });
 
@@ -161,14 +184,32 @@ $(document).on("click touch", "#pickup", function() {
 });
 
 $(document).on("click touch", "#therapy", function() {
-	location.hash = "#therapy";
-	document.title = 'Terapia - Unlock490';
+	if (pickupconfirmed) {
+		location.hash = "#exampletherapies";
+		document.title = 'Terapia - Unlock490';
+		$("#loader").show();
+		$.ajax($('#therapiescontainer').load("/exampletherapies")).done(function() {
+			$("#loader").hide();
+		});
+	} else {
+		location.hash = "#therapy";
+		document.title = 'Terapia - Unlock490';
+	}
     return false;
 });
 
 $(document).on("click touch", "#notifications", function() {
-	location.hash = "#notifications";
-	document.title = 'Notifiche - Unlock490';
+	if (pickupconfirmed) {
+		location.hash = "#examplenotifications";
+		document.title = 'Notifiche - Unlock490';
+		$("#loader").show();
+		$.ajax($('#notificationscontainer').load("/examplenotifications")).done(function() {
+			$("#loader").hide();
+		});
+	} else {
+		location.hash = "#notifications";
+		document.title = 'Notifiche - Unlock490';
+	}
     return false;
 });
 
@@ -306,19 +347,61 @@ $(document).on("click touch", "#modifypickupButton", function() {
 });
 
 $(document).on("click touch", "#skipButton", function() {
-	location.hash = "#login";
-	document.title = 'Accesso - Unlock490';
+	if (loggedin) {
+		location.hash = "#menu";
+		document.title = 'Home - Unlock490';
+	} else {
+		location.hash = "#login";
+		document.title = 'Accesso - Unlock490';
+	}
     return false;
 });
 
 $(document).on("click touch", "#closetutorial", function() {
-	location.hash = "#login";
-	document.title = 'Accesso - Unlock490';
+	if (loggedin) {
+		location.hash = "#menu";
+		document.title = 'Home - Unlock490';
+	} else {
+		location.hash = "#login";
+		document.title = 'Accesso - Unlock490';
+	}
     return false;
 });
 
 $(document).on("click touch", "#infoButton", function() {
 	location.hash = "#hospitalinfo";
 	document.title = 'Informazioni sul centro ospedaliero - Unlock490';
+    return false;
+});
+
+$(document).on("click touch", ".panel-title1", function() {
+	if (rotated) {
+		$(".panel-title1 a .fa-angle-down").css({"-webkit-transform":"rotate(0deg)","-moz-transform":"rotate(0deg)","-ms-transform":"rotate(0deg)","-o-transform":"rotate(0deg)","transform":"rotate(0deg)"});
+		rotated = false;
+	} else {
+		$(".panel-title1 a .fa-angle-down").css({"-webkit-transform":"rotate(180deg)","-moz-transform":"rotate(180deg)","-ms-transform":"rotate(180deg)","-o-transform":"rotate(180deg)","transform":"rotate(180deg)"});
+		rotated = true;
+	}
+});
+
+$(document).on("click touch", ".panel-title2", function() {
+	if (rotated) {
+		$(".panel-title2 a .fa-angle-down").css({"-webkit-transform":"rotate(0deg)","-moz-transform":"rotate(0deg)","-ms-transform":"rotate(0deg)","-o-transform":"rotate(0deg)","transform":"rotate(0deg)"});
+		rotated = false;
+	} else {
+		$(".panel-title2 a .fa-angle-down").css({"-webkit-transform":"rotate(180deg)","-moz-transform":"rotate(180deg)","-ms-transform":"rotate(180deg)","-o-transform":"rotate(180deg)","transform":"rotate(180deg)"});
+		rotated = true;
+	}
+});
+
+$(document).on("click touch", "#choosenewpassword", function() {
+	location.hash = "#choosenewpassword";
+	document.title = 'Cambia password - Unlock490';
+    return false;
+});
+
+$(document).on("click touch", "#calendar", function() {
+	location.hash = "#calendar";
+	document.title = 'Calendario - Unlock490';
     return false;
 });
