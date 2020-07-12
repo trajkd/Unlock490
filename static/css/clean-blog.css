@@ -101,15 +101,45 @@ blockquote {
   cursor: pointer;
 }
 
+#back {
+  cursor: pointer;
+  padding: .5rem 1rem;
+}
+
+.fa-arrow-left {
+  font-size: 50px;
+  -webkit-text-stroke: 4px #fafafa;
+}
+
+#sectiontitle {
+  display: inline-block;
+  font-size: 6vw;
+}
+
+.fa-bars {
+  -webkit-text-stroke: 4px #fafafa;
+}
+
+.btn.active.focus,
+.btn.active:focus,
+.btn.focus,
+.btn.focus:active,
+.btn:active:focus,
+.btn:focus {
+  outline: 0 !important;
+  outline-offset: 0  !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none  !important;
+}
+
 .wrapper {
+    position: relative;
+    height: auto;
     display: flex;
-    overflow: auto;
     align-items: stretch;
 }
 
 #sidebar {
-    overflow-y: auto;
-    overflow-x: hidden;
     min-width: 250px;
     max-width: 250px;
     right: -250px;
@@ -117,6 +147,12 @@ blockquote {
     position: fixed;
     z-index: 1;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.components {
+  height: 300px;
+  overflow-y: scroll;
+  overflow-x: auto;
 }
 
 #sidebar.active {
@@ -221,6 +257,13 @@ ul ul a {
   padding-bottom: 30px;
 }
 
+.logo-card {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 120px;
+}
+
 #hospitalDetails {
   position: relative;
   display: flex;
@@ -262,12 +305,27 @@ ul ul a {
   justify-content: space-between;
 }
 
+#chosentime {
+  border: 3px solid black;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+#chosenday, #chosenhour {
+  margin: 30px 20px;
+}
+
 #closetutorial {
   position: absolute;
   top: 20px;
   right: 20px;
   z-index: 99;
   cursor: pointer;
+}
+
+.fa-times {
+  font-size: 40px;
+  -webkit-text-stroke: 4px #fafafa;
 }
 
 svg {
@@ -292,8 +350,25 @@ svg {
   margin-top: 60px;
 }
 
+.swiper-button-prev, .swiper-button-next {
+  outline: none;
+}
+
 .description {
   margin: 0;
+}
+
+#profileDetails {
+  position: relative;
+  display: flex;
+  text-align: left;
+  border: 3px solid black;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+#profileNameCF {
+  margin-left: 10px;
 }
 
 #loader {

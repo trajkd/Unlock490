@@ -34,7 +34,13 @@ function getContent(fragmentId, callback){
     pickup: "/pickup",
     pickuphour: "/pickuphour",
     confirmpickup: "/confirmpickup",
-    readyforpickup: "/readyforpickup"
+    readyforpickup: "/readyforpickup",
+    hospitalinfo: "/hospitalinfo",
+    profile: "/profile",
+    therapy: "/therapy",
+    notifications: "/notifications",
+    guide: "/guide",
+    settings: "/settings"
   };
 
   callback(pages[fragmentId]);
@@ -308,5 +314,11 @@ $(document).on("click touch", "#skipButton", function() {
 $(document).on("click touch", "#closetutorial", function() {
 	location.hash = "#login";
 	document.title = 'Accesso - Unlock490';
+    return false;
+});
+
+$(document).on("click touch", "#infoButton", function() {
+	location.hash = "#hospitalinfo";
+	document.title = 'Informazioni sul centro ospedaliero - Unlock490';
     return false;
 });

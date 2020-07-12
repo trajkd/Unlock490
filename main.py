@@ -339,6 +339,10 @@ class SettingsHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('settings.html').render())
 
+class HospitalInfoHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('hospitalinfo.html').render())
+
 def render_str(template, **params):
                 t = jinja_env.get_template(template)
                 return t.render(params)
@@ -415,5 +419,6 @@ app = webapp2.WSGIApplication([
         ('/notifications', NotificationsHandler),
         ('/guide', GuideHandler),
         ('/settings', SettingsHandler),
+        ('/hospitalinfo', HospitalInfoHandler),
         (r'/static/(.+)', StaticFileHandler)
 ], debug = True)
