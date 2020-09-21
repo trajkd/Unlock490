@@ -52,18 +52,43 @@ function getContent(fragmentId, callback){
 }
 
 function loadContent(){
-	$("#loader").show();
+    $("#loader").show();
     var fragmentId = location.hash.substr(1);
 
-  getContent(fragmentId, function (content) {
-    $.ajax($('.container').load(content)).done(function() {
-    	$("#loader").hide();
-    	if (pickupconfirmed) {
-			$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
-		}
+    getContent(fragmentId, function (content) {
+        $.ajax($('.container').load(content)).done(function() {
+        	$("#loader").hide();
+            window.scrollTo(0, 0);
+            footer();
+        	if (pickupconfirmed) {
+        		$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+        	}
+            if (fragmentId === "home" || fragmentId === "login" || fragmentId === "tutorial") {
+                $('.identity').css('visibility', 'hidden');
+            } else {
+                $('.identity').css('visibility', 'visible');
+            }
+            if (fragmentId === "menu" || fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "therapy" || fragmentId === "notifications" || fragmentId === "guide" || fragmentId === "settings" || fragmentId === "calendar" || fragmentId === "examplenotifications" || fragmentId === "exampletherapies") {
+                $('.nav').css('visibility', 'visible');
+            } else {
+                $('.nav').css('visibility', 'hidden');
+            }
+            $('.nav__link').css('font-weight', 'normal');
+            $('.nav__link').css('font-size', '13px');
+            if (fragmentId === "calendar") {
+                $('.calendar').css('font-weight', '900');
+                $('.calendar').css('font-size', '17px');
+            }
+            if (fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "pickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo") {
+                $('.pickup').css('font-weight', '900');
+                $('.pickup').css('font-size', '17px');
+            }
+            if (fragmentId === "settings" || fragmentId === "guide" || fragmentId === "profile") {
+                $('.settings').css('font-weight', '900');
+                $('.settings').css('font-size', '17px');
+            }
+        });
     });
-  });
-
 }
 
 if(!location.hash) {
@@ -71,7 +96,6 @@ if(!location.hash) {
 }
 
 loadContent();
-
 window.addEventListener("hashchange", loadContent)
 
 $(document).on("click touch", "#signup", function() {
@@ -106,11 +130,15 @@ $(document).on("click touch", "#verifyphoneButton", function() {
 
 $(document).on("click touch", "#loginButton", function() {
 	loggedin = true;
-	location.hash = "#menu";
-	document.title = 'Menu - Unlock490';
 	if (pickupconfirmed) {
 		$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
 	}
+    if (pickupconfirmed) {
+        location.hash = "#readyforpickup";
+    } else {
+        location.hash = "#pickup";
+    }
+    document.title = 'Ritiro - Unlock490';
     return false;
 });
 

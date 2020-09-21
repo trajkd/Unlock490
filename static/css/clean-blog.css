@@ -7,7 +7,7 @@
 body {
   font-size: 20px;
   color: #343a40;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   text-align: center;
 }
 
@@ -235,10 +235,12 @@ ul ul a {
 }
 
 .identity {
+  position: relative;
   display: inline-block;
   text-align: center;
   width: 120px;
   margin: 0;
+  visibility: hidden;
 }
 
 #calendar{
@@ -268,7 +270,6 @@ ul ul a {
 
 .tagline-small {
   font-size: 10px;
-  padding-bottom: 30px;
 }
 
 .logo-card {
@@ -396,6 +397,10 @@ svg {
 
 #profileNameCF {
   margin-left: 10px;
+}
+
+.panel-title a {
+  text-decoration: none;
 }
 
 .active-item {
@@ -734,7 +739,7 @@ header.masthead .post-heading .meta {
   font-size: 20px;
   font-weight: 300;
   font-style: italic;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 header.masthead .post-heading .meta a {
@@ -813,13 +818,13 @@ header.masthead .post-heading .meta a {
   background: none;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .floating-label-form-group input::-webkit-input-placeholder,
 .floating-label-form-group textarea::-webkit-input-placeholder {
   color: #868e96;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .floating-label-form-group label {
@@ -987,4 +992,8 @@ $duration: 25s;
   to {
     transform: translate(0%, -100%);
   }
+}
+
+.row {
+  margin-top: 90px;
 }
