@@ -26,7 +26,6 @@ function getContent(fragmentId, callback){
     verifyemail: "/verifyemail",
     verifyphone: "/verifyphone",
     success: "/success",
-    doubts: "/doubts",
     newpassword: "/newpassword",
     verifyemailforrecovery: "/verifyemailforrecovery",
     verifyphoneforrecovery: "/verifyphoneforrecovery",
@@ -39,13 +38,9 @@ function getContent(fragmentId, callback){
     readyforpickup: "/readyforpickup",
     hospitalinfo: "/hospitalinfo",
     profile: "/profile",
-    therapy: "/therapy",
-    notifications: "/notifications",
     guide: "/tutorial",
     settings: "/settings",
-    calendar: "/calendar",
-    examplenotifications: "/examplenotifications",
-    exampletherapies: "/exampletherapies"
+    calendar: "/calendar"
   };
 
   callback(pages[fragmentId]);
@@ -142,12 +137,6 @@ $(document).on("click touch", "#loginButton", function() {
     return false;
 });
 
-$(document).on("click touch", "#doubts", function() {
-	location.hash = "#doubts";
-	document.title = 'Dubbi sulla password - Unlock490';
-    return false;
-});
-
 $(document).on("click touch", "#newpassword", function() {
 	location.hash = "#newpassword";
 	document.title = 'Reimposta password - Unlock490';
@@ -185,16 +174,6 @@ $(document).on("click touch", "#toLogin", function() {
     return false;
 });
 
-$(document).on("click touch", "#menu", function() {
-	loggedin = true;
-	location.hash = "#menu";
-	document.title = 'Menu - Unlock490';
-	if (pickupconfirmed) {
-		$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
-	}
-    return false;
-});
-
 $(document).on("click touch", "#profile", function() {
 	location.hash = "#profile";
 	document.title = 'Profilo - Unlock490';
@@ -209,36 +188,6 @@ $(document).on("click touch", "#pickup", function() {
 	}
 	document.title = 'Ritiro - Unlock490';
 	return false;
-});
-
-$(document).on("click touch", "#therapy", function() {
-	if (pickupconfirmed) {
-		location.hash = "#exampletherapies";
-		document.title = 'Terapia - Unlock490';
-		$("#loader").show();
-		$.ajax($('#therapiescontainer').load("/exampletherapies")).done(function() {
-			$("#loader").hide();
-		});
-	} else {
-		location.hash = "#therapy";
-		document.title = 'Terapia - Unlock490';
-	}
-    return false;
-});
-
-$(document).on("click touch", "#notifications", function() {
-	if (pickupconfirmed) {
-		location.hash = "#examplenotifications";
-		document.title = 'Notifiche - Unlock490';
-		$("#loader").show();
-		$.ajax($('#notificationscontainer').load("/examplenotifications")).done(function() {
-			$("#loader").hide();
-		});
-	} else {
-		location.hash = "#notifications";
-		document.title = 'Notifiche - Unlock490';
-	}
-    return false;
 });
 
 $(document).on("click touch", "#guide", function() {

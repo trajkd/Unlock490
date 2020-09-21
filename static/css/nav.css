@@ -28,6 +28,14 @@
 	position: relative;
 }
 
+.nav__link:focus {
+	color: white;
+}
+
+.nav__link:hover {
+	color: #0048af;
+}
+
 .nav__link:hover:before {
  	content: url('../img/radial-gradient.png');
  	position: absolute;

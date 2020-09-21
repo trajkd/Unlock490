@@ -89,6 +89,10 @@ blockquote {
   border: 2px solid #5cb85c;
 }
 
+.form-control:focus {
+  background-color: transparent;
+}
+
 #nav {
   display: flex;
   justify-content: space-between;

@@ -271,10 +271,6 @@ class SuccessHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('success.html').render())
 
-class DoubtsHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('doubts.html').render())
-
 class NewPasswordHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('newpassword.html').render())
@@ -294,14 +290,6 @@ class ChooseNewPasswordHandler(webapp2.RequestHandler):
 class RecoverySuccessHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('recoverysuccess.html').render())
-
-class MenuHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('menu.html').render())
-
-class MenuHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('menu.html').render())
 
 class ProfileHandler(webapp2.RequestHandler):
     def get(self):
@@ -323,14 +311,6 @@ class ReadyForPickupHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('readyforpickup.html').render())
 
-class TherapyHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('therapy.html').render())
-
-class NotificationsHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('notifications.html').render())
-
 class GuideHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('guide.html').render())
@@ -346,14 +326,6 @@ class CalendarHandler(webapp2.RequestHandler):
 class HospitalInfoHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('hospitalinfo.html').render())
-
-class ExampleTherapiesHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('exampletherapies.html').render())
-
-class ExampleNotificationsHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(jinja_env.get_template('examplenotifications.html').render())
 
 def render_str(template, **params):
                 t = jinja_env.get_template(template)
@@ -415,25 +387,19 @@ app = webapp2.WSGIApplication([
         ('/verifyemail', VerifyEmailHandler),
         ('/verifyphone', VerifyPhoneHandler),
         ('/success', SuccessHandler),
-        ('/doubts', DoubtsHandler),
         ('/newpassword', NewPasswordHandler),
         ('/verifyemailforrecovery', VerifyEmailForRecoveryHandler),
         ('/verifyphoneforrecovery', VerifyPhoneForRecoveryHandler),
         ('/choosenewpassword', ChooseNewPasswordHandler),
         ('/recoverysuccess', RecoverySuccessHandler),
-        ('/menu', MenuHandler),
         ('/profile', ProfileHandler),
         ('/pickup', PickupHandler),
         ('/pickuphour', PickupHourHandler),
         ('/confirmpickup', ConfirmPickupHandler),
         ('/readyforpickup', ReadyForPickupHandler),
-        ('/therapy', TherapyHandler),
-        ('/notifications', NotificationsHandler),
         ('/guide', GuideHandler),
         ('/settings', SettingsHandler),
         ('/calendar', CalendarHandler),
         ('/hospitalinfo', HospitalInfoHandler),
-        ('/exampletherapies', ExampleTherapiesHandler),
-        ('/examplenotifications', ExampleNotificationsHandler),
         (r'/static/(.+)', StaticFileHandler)
 ], debug = True)
