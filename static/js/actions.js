@@ -31,7 +31,6 @@ function getContent(fragmentId, callback){
     verifyphoneforrecovery: "/verifyphoneforrecovery",
     choosenewpassword: "/choosenewpassword",
     recoverysuccess: "/recoverysuccess",
-    menu: "/menu",
     pickup: "/pickup",
     pickuphour: "/pickuphour",
     confirmpickup: "/confirmpickup",
@@ -82,6 +81,70 @@ function loadContent(){
                 $('.settings').css('font-weight', '900');
                 $('.settings').css('font-size', '17px');
             }
+
+            if (fragmentId === "home" || fragmentId === "login") {
+                document.title = 'Accesso - Unlock490';
+            }
+            if (fragmentId === "tutorial") {
+                
+            }
+            if (fragmentId === "signup") {
+                document.title = 'Iscrizione - Unlock490';
+            }
+            if (fragmentId === "emailphonesignup") {
+                document.title = 'Dati aggiuntivi - Unlock490';
+            }
+            if (fragmentId === "verifyemail") {
+                document.title = 'Verifica email - Unlock490';
+            }
+            if (fragmentId === "verifyphone") {
+                document.title = 'Verifica cellulare - Unlock490';
+            }
+            if (fragmentId === "success") {
+                document.title = 'Iscrizione terminata - Unlock490';
+            }
+            if (fragmentId === "newpassword") {
+                document.title = 'Reimposta password - Unlock490';
+            }
+            if (fragmentId === "verifyemailforrecovery") {
+                document.title = 'Reimposta password - Unlock490';
+            }
+            if (fragmentId === "verifyphoneforrecovery") {
+                document.title = 'Reimposta password - Unlock490';
+            }
+            if (fragmentId === "choosenewpassword") {
+                document.title = 'Reimposta password - Unlock490';
+            }
+            if (fragmentId === "recoverysuccess") {
+                document.title = 'Reimposta password - Unlock490';
+            }
+            if (fragmentId === "pickup") {
+                document.title = 'Ritiro - Unlock490';
+            }
+            if (fragmentId === "pickuphour") {
+                document.title = 'Ritiro - Unlock490';
+            }
+            if (fragmentId === "confirmpickup") {
+                document.title = 'Ritiro - Unlock490';
+            }
+            if (fragmentId === "readyforpickup") {
+                document.title = 'Ritiro - Unlock490';
+            }
+            if (fragmentId === "hospitalinfo") {
+                document.title = 'Informazioni sul centro ospedaliero - Unlock490';
+            }
+            if (fragmentId === "profile") {
+                document.title = 'Profilo - Unlock490';
+            }
+            if (fragmentId === "guide") {
+                document.title = 'Guida - Unlock490';
+            }
+            if (fragmentId === "settings") {
+                document.title = 'Impostazioni - Unlock490';
+            }
+            if (fragmentId === "calendar") {
+                document.title = 'Calendario - Unlock490';
+            }
         });
     });
 }
@@ -95,31 +158,26 @@ window.addEventListener("hashchange", loadContent)
 
 $(document).on("click touch", "#signup", function() {
     location.hash = "#signup";
-    document.title = 'Iscrizione - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#signupButton", function() {
 	location.hash = "#emailphonesignup";
-	document.title = 'Dati aggiuntivi - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#emailphonesignupButton", function() {
 	location.hash = "#verifyemail";
-	document.title = 'Verifica email - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#verifyemailButton", function() {
 	location.hash = "#verifyphone";
-	document.title = 'Verifica cellulare - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#verifyphoneButton", function() {
 	location.hash = "#success";
-	document.title = 'Iscrizione terminata - Unlock490';
     return false;
 });
 
@@ -133,50 +191,42 @@ $(document).on("click touch", "#loginButton", function() {
     } else {
         location.hash = "#pickup";
     }
-    document.title = 'Ritiro - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#newpassword", function() {
 	location.hash = "#newpassword";
-	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#recoveryButton", function() {
 	location.hash = "#verifyemailforrecovery";
-	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#verifyemailforrecoveryButton", function() {
 	location.hash = "#verifyphoneforrecovery";
-	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#verifyphoneforrecoveryButton", function() {
 	location.hash = "#choosenewpassword";
-	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#choosepasswordButton", function() {
 	location.hash = "#recoverysuccess";
-	document.title = 'Reimposta password - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#toLogin", function() {
 	loggedin = false;
 	location.hash = "#login";
-	document.title = 'Accesso - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#profile", function() {
 	location.hash = "#profile";
-	document.title = 'Profilo - Unlock490';
     return false;
 });
 
@@ -186,19 +236,16 @@ $(document).on("click touch", "#pickup", function() {
 	} else {
 		location.hash = "#pickup";
 	}
-	document.title = 'Ritiro - Unlock490';
 	return false;
 });
 
 $(document).on("click touch", "#guide", function() {
 	location.hash = "#guide";
-	document.title = 'Guida - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#settings", function() {
 	location.hash = "#settings";
-	document.title = 'Impostazioni - Unlock490';
     return false;
 });
     // $.ajax({
@@ -249,7 +296,6 @@ $(document).on("click touch", "#filterNextWeek", function() {
 
 $(document).on("click touch", ".available-day", function() {
 	location.hash = "#pickuphour";
-	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
@@ -306,48 +352,40 @@ $(document).on("click touch", "#filterPM", function() {
 
 $(document).on("click touch", ".available-hour", function() {
 	location.hash = "#confirmpickup";
-	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#confirmpickupButton", function() {
 	pickupconfirmed = true;
 	location.hash = "#readyforpickup";
-	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#modifypickupButton", function() {
 	location.hash = "#pickup";
-	document.title = 'Ritiro - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#skipButton", function() {
 	if (loggedin) {
-		location.hash = "#menu";
-		document.title = 'Home - Unlock490';
+		location.hash = "#settings";
 	} else {
 		location.hash = "#login";
-		document.title = 'Accesso - Unlock490';
 	}
     return false;
 });
 
 $(document).on("click touch", "#closetutorial", function() {
 	if (loggedin) {
-		location.hash = "#menu";
-		document.title = 'Home - Unlock490';
+		location.hash = "#settings";
 	} else {
 		location.hash = "#login";
-		document.title = 'Accesso - Unlock490';
 	}
     return false;
 });
 
 $(document).on("click touch", "#infoButton", function() {
 	location.hash = "#hospitalinfo";
-	document.title = 'Informazioni sul centro ospedaliero - Unlock490';
     return false;
 });
 
@@ -373,12 +411,10 @@ $(document).on("click touch", ".panel-title2", function() {
 
 $(document).on("click touch", "#choosenewpassword", function() {
 	location.hash = "#choosenewpassword";
-	document.title = 'Cambia password - Unlock490';
     return false;
 });
 
 $(document).on("click touch", "#calendar", function() {
 	location.hash = "#calendar";
-	document.title = 'Calendario - Unlock490';
     return false;
 });
