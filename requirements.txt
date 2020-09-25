@@ -1,6 +1,5 @@
-webapp2
-webob
+webapp3
 jinja2
-boto3
-datetime
-paste
+firebase_admin
+google-cloud-firestore
+gunicorn

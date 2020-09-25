@@ -11,58 +11,8 @@ jQuery.validator.setDefaults({
 	}
 });
 
-$(document).ready(function() {
-	var $form, $loader, $modal, $messageModalContent;
-
-	$loader = $("#loader");
-	$form = $("#contactForm");
-	$modal = $("#messageModal");
-	$messageModalContent = $("#messageModalContent")
-
-	$form.validate({
-		rules: {
-			name: {
-				required: true
-			},
-			email: {
-				required: true
-			},
-			message: {
-				required: true
-			}
-		},
-		messages: {
-			name: {
-				required: "Please enter a name"
-			},
-			email: {
-				required: "Please enter an email"
-			},
-			message: {
-				required: "Please enter a message"
-			}
-		}
-	});
-
-	$form.ajaxForm({
-		dataType: 'json',
-		beforeSubmit: function() {
-			if(!$form.valid()) {
-				return false;
-			}
-			$loader.show();
-		},
-		success: function(res) {
-			$loader.hide();
-			$messageModalContent.removeClass("alert-danger").addClass("alert-success");
-			$messageModalContent.html("Message sent successfully!")
-			$modal.modal("show");
-		},
-		error: function(error) {
-			$loader.hide();
-			$messageModalContent.removeClass("alert-success").addClass("alert-danger");
-			$messageModalContent.html("Failed to send the message...")
-			$modal.modal("show");
-		}
-	});
-})
+jQuery.validator.addMethod("phone", function (phone_number, element) {
+    phone_number = phone_number.replace(/\s+/g, "");
+    return this.optional(element) || phone_number.length > 9 &&
+          phone_number.match(/^(([+]|00)39)?((3[0-9][0-9]))(\d{7})$/);
+}, "Inserisci un numero di cellulare valido");

@@ -4,6 +4,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0048af"/>
+    <link rel="icon" href="static/img/locked.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="static/img/900x900.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="#0048af">
+    <meta name="apple-mobile-web-app-title" content="UNLOCK 4/90">
+    <meta name="application-name" content="UNLOCK 4/90" />
+    <meta name="msapplication-TileImage" content="static/img/900x900.svg"> 
+    <meta name="msapplication-TileColor" content="white">
     <title>Home - Unlock490</title>
     <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
@@ -109,9 +119,35 @@
     <script src="../static/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../static/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
+    <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyDD9lbAyqnu7lHTDgi0cLCxNGU_l0z38I4",
+        authDomain: "unlock490firebase.firebaseapp.com",
+        databaseURL: "https://unlock490firebase.firebaseio.com",
+        projectId: "unlock490firebase",
+        storageBucket: "unlock490firebase.appspot.com",
+        messagingSenderId: "505845121748",
+        appId: "1:505845121748:web:528bd38ef5b9700793f141",
+        measurementId: "G-8Q87W55Q2S"
+      };
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
     <script src="../static/js/clean-blog.js"></script>
     <script src="../static/js/form.js"></script>
     <script src="../static/js/actions.js"></script>
+    <script async>
+        window.onload = () => {
+            'use strict'; 
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker
+                .register('/service-worker.js');
+            }
+        }
+    </script>
 </body>
 
 </html>

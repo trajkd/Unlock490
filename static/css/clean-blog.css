@@ -226,6 +226,10 @@ ul ul a {
     background: #6d7fcc;
 }
 
+.close {
+  font-size: 2rem;
+}
+
 .option {
   padding: 20px 0;
 }
@@ -409,6 +413,13 @@ svg {
 
 .active-item {
   background-color: #0048af;
+  color: white;
+  font-weight: 900;
+}
+
+.list-group-item:hover {
+  background-color: #003786;
+  color: white;
 }
 
 #loader {
@@ -814,7 +825,6 @@ header.masthead .post-heading .meta a {
 .floating-label-form-group textarea {
   font-size: 1.5em;
   position: relative;
-  z-index: 1;
   padding: 0;
   resize: none;
   border: none;
