@@ -4,31 +4,66 @@ $(document).on("click touch", "#sidebarCollapse", function() {
 
 $(window).on('load', function() {
 
-    $("#loader").show();
-    cookie_value = getCookie("userid")
-    if (cookie_value !== "") {
-        $.ajax({
-            url: '/checklogin',
-            dataType: 'json',
-            method: 'POST',
-            data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
-            success: function(res) {
-                $("#loader").hide();
-                if (!res.redirectToLogin) {
-                    if (pickupconfirmed) {
-                        location.hash = "#readyforpickup";
+    var fragmentId = location.hash.substr(1);
+    if (fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "settings" || fragmentId === "calendar") {
+        $("#loader").show();
+        cookie_value = getCookie("userid");
+        if (cookie_value !== "") {
+            $.ajax({
+                url: '/checklogin',
+                dataType: 'json',
+                method: 'POST',
+                data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                success: function(res) {
+                    if (!res.redirectToLogin) {
+                        $("#loader").show();
+                        cookie_value = getCookie("userid");
+                        if (cookie_value !== "") {
+                            $.ajax({
+                                url: '/checkpickup',
+                                dataType: 'json',
+                                method: 'POST',
+                                data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                                success: function(res) {
+                                    if (res.redirectToLogin) {
+                                        $("#loader").hide();
+                                        location.hash = "#login";
+                                    } else {
+                                        if (res.day_for_pickup) {
+                                            $("#loader").hide();
+                                            location.hash = "#readyforpickup";
+                                        } else {
+                                            $("#loader").hide();
+                                            location.hash = "#pickup";
+                                        }
+                                    }
+                                },
+                                error: function(error) {
+                                    $("#loader").hide();
+                                    $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                                    $("#messageModalContent").html(error.responseText)
+                                    $("#messageModal").modal("show");
+                                }
+                            });
+                        } else {
+                            $("#loader").hide();
+                            location.hash = "#login";
+                        }
                     } else {
-                        location.hash = "#pickup";
+                        location.hash = "#tutorial";
+                        $.ajax($('.container').load("/tutorial")).done(function() {
+                            $("#loader").hide();
+                        });
                     }
-                } else {
-                    location.hash = "#tutorial";
-                    $.ajax($('.container').load("/tutorial")).done(function() {
-                        $("#loader").hide();
-                    });
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        } else {
+            location.hash = "#tutorial";
+            $.ajax($('.container').load("/tutorial")).done(function() {
+                $("#loader").hide();
+            });
+        }
     } else {
         location.hash = "#tutorial";
         $.ajax($('.container').load("/tutorial")).done(function() {
@@ -37,17 +72,72 @@ $(window).on('load', function() {
     }
 });
 
-var pickupconfirmed = false;
 var rotated1 = false;
 var rotated2 = false;
 var rotated3 = false;
-var username, email, phone;
+var username, email, phone, day_for_pickup, hour_for_pickup;
+
+function convertDate(db_entry) {
+    var year = db_entry.slice(0, 4);
+    var month = db_entry.slice(4, 6);
+    if (month === "01") {
+        month = "January"
+    }
+    else if (month === "02") {
+        month = "February"
+    }
+    else if (month === "03") {
+        month = "March"
+    }
+    else if (month === "04") {
+        month = "April"
+    }
+    else if (month === "05") {
+        month = "May"
+    }
+    else if (month === "06") {
+        month = "June"
+    }
+    else if (month === "07") {
+        month = "July"
+    }
+    else if (month === "08") {
+        month = "August"
+    }
+    else if (month === "09") {
+        month = "September"
+    }
+    else if (month === "10") {
+        month = "October"
+    }
+    else if (month ==="11") {
+        month = "November"
+    }
+    else if (month === "12") {
+        month = "December"
+    }
+    var day = db_entry.slice(6, 8).replace(/\b0+/, '');
+    if (db_entry.slice(7, 8).replace(/\b0+/, '') === "1") {
+        var ordinal = "st";
+    } else if (db_entry.slice(7, 8).replace(/\b0+/, '') === "2") {
+        var ordinal = "nd";
+    } else if (db_entry.slice(7, 8).replace(/\b0+/, '') === "3") {
+        var ordinal = "rd";
+    } else {
+        var ordinal = "th";
+    }
+    return month + " " + day + ordinal + ", " + year
+}
+
+function convertHour(db_entry) {
+    return db_entry.slice(0, 2).replace(/\b0+/, '') + ":" + db_entry.slice(2, 4)
+}
 
 function getCookie(cookiename) 
   {
   // Get name followed by anything except a semicolon
   var cookiestring=RegExp(cookiename+"=[^;]+").exec(document.cookie);
-  // Return everything after the equal sign, or an empty string if the cookie name not found
+  // Return everything after the equal sign, or an empty string if the cookie name is not found
   return decodeURIComponent(!!cookiestring ? cookiestring.toString().replace(/^[^=]+./,"") : "");
   }
 
@@ -90,9 +180,38 @@ function loadContent(){
         	$("#loader").hide();
             window.scrollTo(0, 0);
             footer();
-        	if (pickupconfirmed) {
-        		$('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
-        	}
+            var fragmentId = location.hash.substr(1);
+            if (fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "settings" || fragmentId === "calendar") {
+                $("#loader").show();
+                cookie_value = getCookie("userid");
+                if (cookie_value !== "") {
+                    $.ajax({
+                        url: '/checkpickup',
+                        dataType: 'json',
+                        method: 'POST',
+                        data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                        success: function(res) {
+                            if (res.redirectToLogin) {
+                                location.hash = "#login";
+                            } else {
+                                if (res.day_for_pickup) {
+                                    $('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+                                }
+                                $("#loader").hide();
+                            }
+                        },
+                        error: function(error) {
+                            $("#loader").hide();
+                            $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                            $("#messageModalContent").html(error.responseText)
+                            $("#messageModal").modal("show");
+                        }
+                    });
+                } else {
+                    $("#loader").hide();
+                    location.hash = "#login";
+                }
+            }
             if (fragmentId === "home" || fragmentId === "login" || fragmentId === "tutorial") {
                 $('.identity').css('visibility', 'hidden');
             } else {
@@ -120,6 +239,7 @@ function loadContent(){
 
             if (fragmentId === "home" || fragmentId === "login") {
                 document.title = 'Accesso - Unlock490';
+
             }
             if (fragmentId === "tutorial") {
                 document.title = 'Tutorial - Unlock490';
@@ -306,14 +426,47 @@ function loadContent(){
             }
             if (fragmentId === "pickuphour") {
                 document.title = 'Ritiro - Unlock490';
+
+                $('#day-for-pickup').html(convertDate(day_for_pickup));
             }
             if (fragmentId === "confirmpickup") {
                 document.title = 'Ritiro - Unlock490';
+
+                $('#day-for-pickup').html(convertDate(day_for_pickup));
+                $('#hour-for-pickup').html(convertHour(hour_for_pickup));
             }
             if (fragmentId === "readyforpickup") {
                 document.title = 'Ritiro - Unlock490';
-                if (pickupconfirmed) {
-                    $('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+
+                $("#loader").show();
+                cookie_value = getCookie("userid");
+                if (cookie_value !== "") {
+                    $.ajax({
+                        url: '/checkpickup',
+                        dataType: 'json',
+                        method: 'POST',
+                        data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                        success: function(res) {
+                            if (res.redirectToLogin) {
+                                location.hash = "#login";
+                            } else {
+                                if (res.day_for_pickup) {
+                                    $('#day-for-pickup').html(convertDate(res.day_for_pickup));
+                                    $('#hour-for-pickup').html(convertHour(res.hour_for_pickup));
+                                    $('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+                                }
+                                $("#loader").hide();
+                            }
+                        },
+                        error: function(error) {
+                            $("#loader").hide();
+                            $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                            $("#messageModalContent").html(error.responseText)
+                            $("#messageModal").modal("show");
+                        }
+                    });
+                } else {
+                    location.hash = "#login";
                 }
             }
             if (fragmentId === "hospitalinfo") {
@@ -432,11 +585,36 @@ $(document).on("click touch", "#loginButton", function() {
         method: 'POST',
         data: {username: document.getElementById('username').value, password: document.getElementById('password').value},
         success: function(res) {
-            $("#loader").hide();
-            if (pickupconfirmed) {
-                location.hash = "#readyforpickup";
+            $("#loader").show();
+            cookie_value = getCookie("userid");
+            if (cookie_value !== "") {
+                $.ajax({
+                    url: '/checkpickup',
+                    dataType: 'json',
+                    method: 'POST',
+                    data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                    success: function(res) {
+                        if (res.redirectToLogin) {
+                            location.hash = "#login";
+                        } else {
+                            if (res.day_for_pickup) {
+                                $("#loader").hide();
+                                location.hash = "#readyforpickup";
+                            } else {
+                                $("#loader").hide();
+                                location.hash = "#pickup";
+                            }
+                        }
+                    },
+                    error: function(error) {
+                        $("#loader").hide();
+                        $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                        $("#messageModalContent").html(error.responseText)
+                        $("#messageModal").modal("show");
+                    }
+                });
             } else {
-                location.hash = "#pickup";
+                location.hash = "#login";
             }
         },
         error: function(error) {
@@ -528,7 +706,7 @@ $(document).on("click touch", "#verifyphoneforrecoveryButton", function() {
 
 $(document).on("click touch", "#choosepasswordButton", function() {
     $("#loader").show();
-    cookie_value = getCookie("userid")
+    cookie_value = getCookie("userid");
     if (cookie_value !== "") {
         $.ajax({
             url: '/choosenewpassword',
@@ -590,11 +768,37 @@ $(document).on("click touch", "#profile", function() {
 });
 
 $(document).on("click touch", "#pickup", function() {
-	if (pickupconfirmed) {
-		location.hash = "#readyforpickup";
-	} else {
-		location.hash = "#pickup";
-	}
+    $("#loader").show();
+    cookie_value = getCookie("userid");
+    if (cookie_value !== "") {
+        $.ajax({
+            url: '/checkpickup',
+            dataType: 'json',
+            method: 'POST',
+            data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+            success: function(res) {
+                if (res.redirectToLogin) {
+                    location.hash = "#login";
+                } else {
+                    if (res.day_for_pickup) {
+                        $("#loader").hide();
+                        location.hash = "#readyforpickup";
+                    } else {
+                        $("#loader").hide();
+                        location.hash = "#pickup";
+                    }
+                }
+            },
+            error: function(error) {
+                $("#loader").hide();
+                $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                $("#messageModalContent").html(error.responseText)
+                $("#messageModal").modal("show");
+            }
+        });
+    } else {
+        location.hash = "#login";
+    }
 	return false;
 });
 
@@ -621,40 +825,41 @@ $(document).on("click touch", "#filterAllDays", function() {
 	$('#filterAllDays').addClass('active');
 	$('#filterCurrentWeek').removeClass('active');
     $('#filterNextWeek').removeClass('active');
-    $("#available-day1").show();
-    $("#available-day2").show();
-    $("#available-day3").show();
-    $("#available-day4").show();
-    $("#available-day5").show();
-    $("#available-day6").show();
+    $("#20210204").show();
+    $("#20210205").show();
+    $("#20210208").show();
+    $("#20210211").show();
+    $("#20210212").show();
+    $("#20210213").show();
 });
 
 $(document).on("click touch", "#filterCurrentWeek", function() {
     $('#filterAllDays').removeClass('active');
 	$('#filterCurrentWeek').addClass('active');
     $('#filterNextWeek').removeClass('active');
-    $("#available-day1").show();
-    $("#available-day2").show();
-    $("#available-day3").show();
-    $("#available-day4").show();
-    $("#available-day5").show();
-    $("#available-day6").hide();
+    $("#20210204").show();
+    $("#20210205").show();
+    $("#20210208").show();
+    $("#20210211").show();
+    $("#20210212").show();
+    $("#20210213").hide();
 });
 
 $(document).on("click touch", "#filterNextWeek", function() {
     $('#filterAllDays').removeClass('active');
 	$('#filterCurrentWeek').removeClass('active');
     $('#filterNextWeek').addClass('active');
-    $("#available-day1").hide();
-    $("#available-day2").hide();
-    $("#available-day3").hide();
-    $("#available-day4").hide();
-    $("#available-day5").hide();
-    $("#available-day6").show();
+    $("#20210204").hide();
+    $("#20210205").hide();
+    $("#20210208").hide();
+    $("#20210211").hide();
+    $("#20210212").hide();
+    $("#20210213").show();
 });
 
 $(document).on("click touch", ".available-day", function() {
-	location.hash = "#pickuphour";
+    day_for_pickup = $(this).attr("id");
+    location.hash = "#pickuphour";
     return false;
 });
 
@@ -662,61 +867,82 @@ $(document).on("click touch", "#filterAllHours", function() {
 	$('#filterAllHours').addClass('active');
 	$('#filterAM').removeClass('active');
     $('#filterPM').removeClass('active');
-    $("#available-hour1").show();
-    $("#available-hour2").show();
-    $("#available-hour3").show();
-    $("#available-hour4").show();
-    $("#available-hour5").show();
-    $("#available-hour6").show();
-    $("#available-hour7").show();
-    $("#available-hour8").show();
-    $("#available-hour9").show();
-    $("#available-hour10").show();
-    $("#available-hour11").show();
+    $("#0730").show();
+    $("#0830").show();
+    $("#0930").show();
+    $("#1030").show();
+    $("#1130").show();
+    $("#1230").show();
+    $("#1330").show();
+    $("#1430").show();
+    $("#1530").show();
+    $("#1630").show();
+    $("#1730").show();
 });
 
 $(document).on("click touch", "#filterAM", function() {
     $('#filterAllHours').removeClass('active');
 	$('#filterAM').addClass('active');
     $('#filterPM').removeClass('active');
-    $("#available-hour1").show();
-    $("#available-hour2").show();
-    $("#available-hour3").show();
-    $("#available-hour4").show();
-    $("#available-hour5").show();
-    $("#available-hour6").show();
-    $("#available-hour7").hide();
-    $("#available-hour8").hide();
-    $("#available-hour9").hide();
-    $("#available-hour10").hide();
-    $("#available-hour11").hide();
+    $("#0730").show();
+    $("#0830").show();
+    $("#0930").show();
+    $("#1030").show();
+    $("#1130").show();
+    $("#1230").show();
+    $("#1330").hide();
+    $("#1430").hide();
+    $("#1530").hide();
+    $("#1630").hide();
+    $("#1730").hide();
 });
 
 $(document).on("click touch", "#filterPM", function() {
     $('#filterAllHours').removeClass('active');
 	$('#filterAM').removeClass('active');
     $('#filterPM').addClass('active');
-    $("#available-hour1").hide();
-    $("#available-hour2").hide();
-    $("#available-hour3").hide();
-    $("#available-hour4").hide();
-    $("#available-hour5").hide();
-    $("#available-hour6").hide();
-    $("#available-hour7").show();
-    $("#available-hour8").show();
-    $("#available-hour9").show();
-    $("#available-hour10").show();
-    $("#available-hour11").show();
+    $("#0730").hide();
+    $("#0830").hide();
+    $("#0930").hide();
+    $("#1030").hide();
+    $("#1130").hide();
+    $("#1230").hide();
+    $("#1330").show();
+    $("#1430").show();
+    $("#1530").show();
+    $("#1630").show();
+    $("#1730").show();
 });
 
 $(document).on("click touch", ".available-hour", function() {
+    hour_for_pickup = $(this).attr("id");
 	location.hash = "#confirmpickup";
     return false;
 });
 
 $(document).on("click touch", "#confirmpickupButton", function() {
-	pickupconfirmed = true;
-	location.hash = "#readyforpickup";
+    $("#loader").show();
+    cookie_value = getCookie("userid");
+    if (cookie_value !== "") {
+        $.ajax({
+            url: '/confirmpickup',
+            dataType: 'json',
+            method: 'POST',
+            data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1], day_for_pickup: day_for_pickup, hour_for_pickup: hour_for_pickup},
+            success: function(res) {
+                $("#loader").hide();
+                location.hash = "#readyforpickup";
+            },
+            error: function(error) {
+                $("#loader").hide();
+                $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                $("#messageModalContent").html(error.responseText)
+                $("#messageModal").modal("show");
+            }
+        });
+    } else {
+        location.hash = "#login";
+    }
     return false;
 });
 
@@ -727,7 +953,7 @@ $(document).on("click touch", "#modifypickupButton", function() {
 
 $(document).on("click touch", "#skipButton", function() {
     $("#loader").show();
-    cookie_value = getCookie("userid")
+    cookie_value = getCookie("userid");
     if (cookie_value !== "") {
         $.ajax({
             url: '/checklogin',
@@ -745,6 +971,7 @@ $(document).on("click touch", "#skipButton", function() {
             }
         });
     } else {
+        $("#loader").hide();
         location.hash = "#login";
     }
     return false;
@@ -752,7 +979,7 @@ $(document).on("click touch", "#skipButton", function() {
 
 $(document).on("click touch", "#closetutorial", function() {
 	$("#loader").show();
-    cookie_value = getCookie("userid")
+    cookie_value = getCookie("userid");
     if (cookie_value !== "") {
         $.ajax({
             url: '/checklogin',
@@ -770,6 +997,7 @@ $(document).on("click touch", "#closetutorial", function() {
             }
         });
     } else {
+        $("#loader").hide();
         location.hash = "#login";
     }
     return false;

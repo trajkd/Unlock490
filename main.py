@@ -84,42 +84,56 @@ def valid_pw(name, pw, h):
     if make_pw_hash(name, pw, h.split(",")[1]) == h:
         return True
 
+from pywebpush import webpush, WebPushException
+from datetime import timezone
+import datetime
+import time
+import math
+  
+dt = datetime.datetime.now()
+utc_time = dt.replace(tzinfo = timezone.utc) 
+utc_timestamp = utc_time.timestamp()
+ 
+VAPID_PRIVATE_KEY = open("private_key.txt", "r").readline().strip("\n")
+VAPID_PUBLIC_KEY = open("public_key.txt", "r").read().strip("\n")
+
+def push_notification(endpoint, p256dh, auth):
+    VAPID_CLAIMS = {
+        "aud": '/'.join((endpoint.split('/'))[:3]),  
+        "exp": math.floor(utc_timestamp / 1000) + (12 * 60 * 60),
+        "sub": "mailto:hello@unlock490.com"
+    }
+    webpush(
+        subscription_info={"endpoint": endpoint, "keys": {"p256dh": p256dh, "auth": auth}},
+        data=json.dumps({
+            "notification": {
+            "title": "You have 1 therapy ready for pickup today",
+            "body": "Go to the hospital by xx:xx to pick it up",
+            "icon": 'images/900x900.svg',
+            "vibrate": [100, 50, 100],
+            "data": { "primaryKey": 1 },
+            "actions": [
+                {"action": "explore", "title": "Open pickup page", "icon": "static/img/boxwithpin.svg"},
+                {"action": "close", "title": "Close", "icon": "static/img/close.svg"},
+            ]
+        }}),
+        vapid_private_key=VAPID_PRIVATE_KEY,
+        vapid_claims=VAPID_CLAIMS
+    )
+
+from apscheduler.schedulers.background import BackgroundScheduler
+scheduler = BackgroundScheduler()
+all_users_ref = db.collection('users').stream()
+for user in all_users_ref:
+    user_dict = user.to_dict()
+    if 'endpoint' in user_dict and 'p256dh' in user_dict and 'auth' in user_dict:
+        subscription_info_dict = db.collection('users').document(user.id).get({'endpoint', 'p256dh', 'auth'}).to_dict()
+        scheduler.add_job(push_notification, 'interval', args=[subscription_info_dict['endpoint'], subscription_info_dict['p256dh'], subscription_info_dict['auth']], seconds=5)
+scheduler.start()
+
 class MainPage(webapp3.RequestHandler):
         def get(self):
             self.response.out.write(jinja_env.get_template('base.html').render())
-        def post(self, username="", email="", username_error="", password_error="", verify_error="", email_error="", ):
-                username = self.request.get("username")
-                password = self.request.get("password")
-                verify = self.request.get("verify")
-                email = self.request.get("email")
-                if (valid_username(username) and valid_password(password) and valid_email(email) and password == verify):
-                        #if len(db.Query(User).filter("username =", username).fetch(limit=1))==0:
-                        if len(query_authors(username))==0:
-                                password = make_pw_hash(username, password)
-                                #u = User(username=username, password=password, email=email)
-                                #u.put()
-                                dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-                                table = dynamodb.Table('Author')
-                                table.put_item(
-                                    Item={
-                                        'username': username,
-                                        'password': password,
-                                        'email': email
-                                    }
-                                )
-                                #self.response.headers.add_header("Set-Cookie", "userid=%s; Path=/"%(str(u.key().id())+"|"+u.password))
-                                self.response.headers.add_header("Set-Cookie", "userid=%s; Path=/"%(username+"|"+password))
-                                self.redirect("/")
-                        else:
-                                self.write_form(username_error="That user already exists.")
-                if not valid_username(username):
-                        username_error = "That's not a valid username."
-                if not valid_password(password):
-                        password_error = "That's not a valid password."
-                if not password == verify:
-                        verify_error = "Your passwords didn't match."
-                if not valid_email(email):
-                        email_error = "That's not a valid email."
 
 class SignupHandler(webapp3.RequestHandler):
         def write_form(self, username="", email="", username_error="", password_error="", verify_error="", email_error=""):
@@ -149,18 +163,18 @@ class SignupHandler(webapp3.RequestHandler):
                                 })
                                 self.response.headers.add_header('Content-Type', 'application/json')
                                 result = {
-                                    'message': 'Informazioni di primo accesso raccolte con successo.'
+                                    'message': 'Login information gathered successfully.'
                                   }
                                 self.response.write(json.dumps(result))
                                 return
                         else:
-                                username_error = "Lo username inserito è già registrato."
+                                username_error = "The provided username has already been registered."
                 if not valid_username(username):
-                        username_error = "Hai inserito un username non valido."
+                        username_error = "The provided username is not valid."
                 if not valid_password(password):
-                        password_error = "Hai inserito una password non valida."
+                        password_error = "The provided password is not valid."
                 if not password == verify:
-                        verify_error = "Le password non coincidono."
+                        verify_error = "The passwords don't match."
                 self.response.write("<ul style='list-style-type:none;padding:0;'><li>"+username_error+"</li><li>"+password_error+"</li><li>"+verify_error+"</li></ul>")
                 self.response.set_status(400, "<ul style='list-style-type:none;padding:0;'><li>"+username_error+"</li><li>"+password_error+"</li><li>"+verify_error+"</li></ul>")
 
@@ -189,16 +203,16 @@ class EmailPhoneSignupHandler(webapp3.RequestHandler):
             email_password = f.read()
 
             message = MIMEMultipart("alternative")
-            message["Subject"] = "Codice di verifica"
+            message["Subject"] = "Verification code"
             message["From"] = sender_email
             message["To"] = receiver_email
 
             # Create the plain-text and HTML version of your message
             text = """\
-            L'indirizzo email """+receiver_email+""" è stato scelto per venire registrato sull'applicazione di UNLOCK 4/90.
-            Per confermare il tuo indirizzo email, usa il seguente codice:
+            The email address """+receiver_email+""" has been chosen to be registered on the UNLOCK 4/90 service.
+            In order to confirm your email address, use the following code:
             """+email_verification_code+"""
-            Se non sei stato tu a richiedere la registrazione su UNLOCK 4/90, ti preghiamo di ignorare questa comunicazione."""
+            If it wasn't you to request the registration on UNLOCK 4/90, we kindly ask you to skip this message."""
             html = """\
             <div style="overflow: hidden;">
                 <font size="-1">
@@ -250,10 +264,10 @@ class EmailPhoneSignupHandler(webapp3.RequestHandler):
                                                                                     <tr>
                                                                                         <td valign="top" style="padding:48px 48px 32px">
                                                                                             <div id="m_-2024486289125691792body_content_inner" style="color:#636363;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;font-size:14px;line-height:150%;text-align:left">
-                                                                                                <p style="margin:0 0 16px">L'indirizzo email """+receiver_email+""" è stato scelto per venire registrato sull'applicazione di UNLOCK 4/90.</p>
-                                                                                                <p style="margin:0 0 16px">Per confermare il tuo indirizzo email, usa il seguente codice:</p>
+                                                                                                <p style="margin:0 0 16px">The email address """+receiver_email+""" has been chosen to be registered on the UNLOCK 4/90 service.</p>
+                                                                                                <p style="margin:0 0 16px">In order to confirm your email address, use the following code:</p>
                                                                                                 <h1 style="margin:0 0 16px; font-weight: 900">"""+email_verification_code+"""</h1>
-                                                                                                <p style="margin:0 0 16px">Se non sei stato tu a richiedere la registrazione su UNLOCK 4/90, ti preghiamo di ignorare questa comunicazione.</p>
+                                                                                                <p style="margin:0 0 16px">If it wasn't you to request the registration on UNLOCK 4/90, we kindly ask you to skip this message.</p>
                                                                                                 <font color="#888888">
                                                                                                 </font>
                                                                                             </div>
@@ -333,20 +347,20 @@ class EmailPhoneSignupHandler(webapp3.RequestHandler):
                 'sms_verification_code': sms_verification_code
             }, merge=True)
             f = open("semysmskey.txt", "r")
-            url = 'https://semysms.net/api/3/sms.php?token='+f.read()+'&device=249444&phone=%2B39'+phone+'&msg=%5BUNLOCK%204%2F90%5D%20Inserisci%20il%20codice%20'+sms_verification_code+'%20per%20proseguire%20la%20registrazione.'
+            url = 'https://semysms.net/api/3/sms.php?token='+f.read()+'&device=249608&phone=%2B39'+phone+'&msg=%5BUNLOCK%204%2F90%5D%20Use%20the%20code%20'+sms_verification_code+'%20to%20continue%20with%20the%20signup%20process.'
             response = requests.get(url)
             if response.status_code == 200:
                 self.response.headers.add_header('Content-Type', 'application/json')
                 result = {
                     'email': receiver_email,
                     'phone': phone,
-                    'message': 'SMS di verifica inviato.'
+                    'message': 'Verification SMS sent.'
                   }
                 self.response.write(json.dumps(result))
                 return
             else:
-                self.response.write("È stato riscontrato un errore durante l'invio dell'SMS di verifica.")
-                self.response.set_status(response.status_code, "È stato riscontrato un errore durante l'invio dell'SMS di verifica.")
+                self.response.write("An error has been encountered while sending the verification SMS.")
+                self.response.set_status(response.status_code, "An error has been encountered while sending the verification SMS.")
                 
 
 class VerifyEmailHandler(webapp3.RequestHandler):
@@ -368,13 +382,13 @@ class VerifyEmailHandler(webapp3.RequestHandler):
                 }, merge=True)
                 self.response.headers.add_header('Content-Type', 'application/json')
                 result = {
-                    'message': 'Email verificata e registrata con successo.'
+                    'message': 'Email verified and registered successfully.'
                   }
                 self.response.write(json.dumps(result))
                 return
             else:
-                self.response.write("È stato inserito un codice errato per la verifica dell'email.")
-                self.response.set_status(400, "È stato inserito un codice errato per la verifica dell'email.")
+                self.response.write("The wrong code has been entered for email verification.")
+                self.response.set_status(400, "The wrong code has been entered for email verification.")
 
 class VerifyPhoneHandler(webapp3.RequestHandler):
         def write_form(self, username="", email="", username_error="", password_error="", verify_error="", email_error=""):
@@ -395,13 +409,13 @@ class VerifyPhoneHandler(webapp3.RequestHandler):
                 }, merge=True)
                 self.response.headers.add_header('Content-Type', 'application/json')
                 result = {
-                    'message': 'Numero di cellulare verificato e registrato con successo.'
+                    'message': 'Phone number verified and registered successfully.'
                   }
                 self.response.write(json.dumps(result))
                 return
             else:
-                self.response.write("È stato inserito un codice errato per la verifica del numero di cellulare.")
-                self.response.set_status(400, "È stato inserito un codice errato per la verifica del numero di cellulare.")
+                self.response.write("The wrong code has been entered for phone number verification.")
+                self.response.set_status(400, "The wrong code has been entered for phone number verification.")
 
 class TutorialHandler(webapp3.RequestHandler):
     def get(self):
@@ -419,13 +433,13 @@ class NewPasswordHandler(webapp3.RequestHandler):
             cf = self.request.get("cf")
             phone = self.request.get("phone")
             if username == "":
-                self.response.write("Inserisci lo username.")
-                self.response.set_status(400, "Inserisci lo username.")
+                self.response.write("Enter the username.")
+                self.response.set_status(400, "Enter the username.")
             else:
                 if db.collection('users'):
                     if db.collection('users').document(username).get().exists:
                         if len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2:
-                            if cf == "PIGMFW91M48F428O" and phone == db.collection('users').document(username).get({'phone'}).to_dict()['phone']:
+                            if cf == "242436562" and phone == db.collection('users').document(username).get({'phone'}).to_dict()['phone']:
                                 
                                 email_verification_code = get_random_string(6)
 
@@ -435,16 +449,16 @@ class NewPasswordHandler(webapp3.RequestHandler):
                                 email_password = f.read()
 
                                 message = MIMEMultipart("alternative")
-                                message["Subject"] = "Codice di verifica"
+                                message["Subject"] = "Verification code"
                                 message["From"] = sender_email
                                 message["To"] = receiver_email
 
                                 # Create the plain-text and HTML version of your message
                                 text = """\
-                                L'account con username """+username+""" registrato con questo indirizzo email sull'applicazione di UNLOCK 4/90 ha richiesto la reimpostazione della password.
-                                Per confermare la richiesta, usa il seguente codice:
+                                The account with the username """+username+""", registered with this email address on the UNLOCK 4/90 service, has requested to reset the password.
+                                To comfirm the request, use the following code:
                                 """+email_verification_code+"""
-                                Se non sei stato tu a richiedere la reimpostazione della password per l'accesso a UNLOCK 4/90, ti preghiamo di ignorare questa comunicazione."""
+                                If it wasn't you to request the reset of the password for accessing UNLOCK 4/90, we kindly ask you to skip this message."""
                                 html = """\
                                 <div style="overflow: hidden;">
                                     <font size="-1">
@@ -496,10 +510,10 @@ class NewPasswordHandler(webapp3.RequestHandler):
                                                                                                         <tr>
                                                                                                             <td valign="top" style="padding:48px 48px 32px">
                                                                                                                 <div id="m_-2024486289125691792body_content_inner" style="color:#636363;font-family:&quot;Helvetica Neue&quot;,Helvetica,Roboto,Arial,sans-serif;font-size:14px;line-height:150%;text-align:left">
-                                                                                                                    <p style="margin:0 0 16px">L'account con username """+username+""" registrato con questo indirizzo email sull'applicazione di UNLOCK 4/90 ha richiesto la reimpostazione della password.</p>
-                                                                                                                    <p style="margin:0 0 16px">Per confermare la richiesta, usa il seguente codice:</p>
+                                                                                                                    <p style="margin:0 0 16px">The account with the username """+username+""", registered with this email address on the UNLOCK 4/90 service, has requested to reset the password.</p>
+                                                                                                                    <p style="margin:0 0 16px">To comfirm the request, use the following code:</p>
                                                                                                                     <h1 style="margin:0 0 16px; font-weight: 900">"""+email_verification_code+"""</h1>
-                                                                                                                    <p style="margin:0 0 16px">Se non sei stato tu a richiedere la reimpostazione della password per l'accesso a UNLOCK 4/90, ti preghiamo di ignorare questa comunicazione.</p>
+                                                                                                                    <p style="margin:0 0 16px">If it wasn't you to request the reset of the password for accessing UNLOCK 4/90, we kindly ask you to skip this message.</p>
                                                                                                                     <font color="#888888">
                                                                                                                     </font>
                                                                                                                 </div>
@@ -578,35 +592,35 @@ class NewPasswordHandler(webapp3.RequestHandler):
                                     'sms_verification_code': sms_verification_code
                                 }, merge=True)
                                 f = open("semysmskey.txt", "r")
-                                url = 'https://semysms.net/api/3/sms.php?token='+f.read()+'&device=249444&phone=%2B39'+phone+'&msg=%5BUNLOCK%204%2F90%5D%20Inserisci%20il%20codice%20'+sms_verification_code+'%20per%20proseguire%20con%20la%20reimpostazione%20della%20password.'
+                                url = 'https://semysms.net/api/3/sms.php?token='+f.read()+'&device=249608&phone=%2B39'+phone+'&msg=%5BUNLOCK%204%2F90%5D%20Enter%20the%20code%20'+sms_verification_code+'%20to%20continue%20with%20the%20reset%20of%20the%20password.'
                                 response = requests.get(url)
                                 if response.status_code == 200:
                                     self.response.headers.add_header('Content-Type', 'application/json')
                                     result = {
                                         'email': db.collection('users').document(username).get({'email'}).to_dict()['email'],
-                                        'message': 'Processo di reimpostazione password avviato.'
+                                        'message': 'Password reset process started.'
                                     }
                                     self.response.write(json.dumps(result))
                                     return
                                 else:
-                                    self.response.write("È stato riscontrato un errore durante l'invio dell'SMS di verifica.")
-                                    self.response.set_status(response.status_code, "È stato riscontrato un errore durante l'invio dell'SMS di verifica.")
+                                    self.response.write("An error was encountered while sending the verification SMS.")
+                                    self.response.set_status(response.status_code, "An error was encountered while sending the verification SMS.")
                             else:
-                                if not cf == "PIGMFW91M48F428O":
-                                        cf_error = "Il codice fiscale per questo username è sbagliato."
+                                if not cf == "242436562":
+                                        cf_error = "The Social Security Number for this username is incorrect."
                                 if not phone == db.collection('users').document(username).get({'phone'}).to_dict()['phone']:
-                                        phone_error = "Il numero di cellulare per questo username è sbagliato."
+                                        phone_error = "The phone number for this username is incorrect."
                                 self.response.write("<ul style='list-style-type:none;padding:0;'><li>"+cf_error+"</li><li>"+phone_error+"</li></ul>")
                                 self.response.set_status(400, "<ul style='list-style-type:none;padding:0;'><li>"+cf_error+"</li><li>"+phone_error+"</li></ul>")
                         else:
-                            self.response.write("La registrazione non è ancora stata completata.")
-                            self.response.set_status(400, "La registrazione non è ancora stata completata.")
+                            self.response.write("The signup process has not been completed yet.")
+                            self.response.set_status(400, "The signup process has not been completed yet.")
                     else:
-                        self.response.write("Lo username inserito non esiste.")
-                        self.response.set_status(400, "Lo username inserito non esiste.")
+                        self.response.write("The username you entered does not exist.")
+                        self.response.set_status(400, "The username you entered does not exist.")
                 else:
-                    self.response.write("Lo username inserito non esiste.")
-                    self.response.set_status(400, "Lo username inserito non esiste.")
+                    self.response.write("The username you entered does not exist.")
+                    self.response.set_status(400, "The username you entered does not exist.")
 
 class VerifyEmailForRecoveryHandler(webapp3.RequestHandler):
     def get(self):
@@ -619,13 +633,13 @@ class VerifyEmailForRecoveryHandler(webapp3.RequestHandler):
             }, merge=True)
             self.response.headers.add_header('Content-Type', 'application/json')
             result = {
-                'message': 'Email verificata con successo.'
+                'message': 'Email verified successfully.'
               }
             self.response.write(json.dumps(result))
             return
         else:
-            self.response.write("È stato inserito un codice errato per la verifica dell'email.")
-            self.response.set_status(400, "È stato inserito un codice errato per la verifica dell'email.")
+            self.response.write("A wrong code has been entered for email verification.")
+            self.response.set_status(400, "A wrong code has been entered for email verification.")
 
 class VerifyPhoneForRecoveryHandler(webapp3.RequestHandler):
     def get(self):
@@ -638,13 +652,13 @@ class VerifyPhoneForRecoveryHandler(webapp3.RequestHandler):
             }, merge=True)
             self.response.headers.add_header('Content-Type', 'application/json')
             result = {
-                'message': 'Numero di cellulare verificato con successo.'
+                'message': 'Phone number verified successfully.'
               }
             self.response.write(json.dumps(result))
             return
         else:
-            self.response.write("È stato inserito un codice errato per la verifica del numero di cellulare.")
-            self.response.set_status(400, "È stato inserito un codice errato per la verifica del numero di cellulare.")
+            self.response.write("A wrong code has been entered for phone number verification.")
+            self.response.set_status(400, "A wrong code has been entered for phone number verification.")
 
 class ChooseNewPasswordHandler(webapp3.RequestHandler):
     def get(self):
@@ -666,21 +680,21 @@ class ChooseNewPasswordHandler(webapp3.RequestHandler):
                         }, merge=True)
                         self.response.headers.add_header('Content-Type', 'application/json')
                         result = {
-                            'message': 'Password modificata con successo.'
+                            'message': 'Password modified successfully'
                           }
                         self.response.write(json.dumps(result))
                         return
                     if not valid_password(password):
-                            password_error = "Hai inserito una password non valida."
+                            password_error = "You entered an invalid password."
                     if not password == verify:
-                            verify_error = "Le password non coincidono."
+                            verify_error = "Passwords don't match."
                     self.response.write("<ul style='list-style-type:none;padding:0;'><li>"+password_error+"</li><li>"+verify_error+"</li></ul>")
                     self.response.set_status(400, "<ul style='list-style-type:none;padding:0;'><li>"+password_error+"</li><li>"+verify_error+"</li></ul>")
                 else:
-                    self.response.write("È necessario inserire i codici di verifica per l'indirizzo email e per il numero di cellulare.")
-                    self.response.set_status(400, "È necessario inserire i codici di verifica per l'indirizzo email e per il numero di cellulare.")
+                    self.response.write("Email address and phone number verification codes must be entered.")
+                    self.response.set_status(400, "Email address and phone number verification codes must be entered.")
             else:
-                if oldpassword == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+                if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and oldpassword == db.collection('users').document(username).get({'password'}).to_dict()['password']:
                     if (valid_password(password) and password == verify):
                         password = make_pw_hash(username, password)
                         doc_ref = db.collection('users').document(username)
@@ -689,19 +703,19 @@ class ChooseNewPasswordHandler(webapp3.RequestHandler):
                         }, merge=True)
                         self.response.headers.add_header('Content-Type', 'application/json')
                         result = {
-                            'message': 'Password modificata con successo.'
+                            'message': 'Password modified successfully.'
                           }
                         self.response.write(json.dumps(result))
                         return
                     if not valid_password(password):
-                            password_error = "Hai inserito una password non valida."
+                            password_error = "You entered an invalid password."
                     if not password == verify:
-                            verify_error = "Le password non coincidono."
+                            verify_error = "Passwords don't match."
                     self.response.write("<ul style='list-style-type:none;padding:0;'><li>"+password_error+"</li><li>"+verify_error+"</li></ul>")
                     self.response.set_status(400, "<ul style='list-style-type:none;padding:0;'><li>"+password_error+"</li><li>"+verify_error+"</li></ul>")
                 else:
-                    self.response.write("Le informazioni dell'utente loggato sono sbagliate.")
-                    self.response.set_status(400, "Le informazioni dell'utente loggato sono sbagliate.")
+                    self.response.write("The logged in user information is wrong.")
+                    self.response.set_status(400, "The logged in user information is wrong.")
 
 class RecoverySuccessHandler(webapp3.RequestHandler):
     def get(self):
@@ -715,6 +729,38 @@ class PickupHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('pickup.html').render())
 
+class CheckPickupHandler(webapp3.RequestHandler):
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+            pickupdict = db.collection('users').document(username).get({'day_for_pickup', 'hour_for_pickup'}).to_dict()
+            if len(pickupdict) == 2:
+                self.response.headers.add_header('Content-Type', 'application/json')
+                result = {
+                    'redirectToLogin': 0,
+                    'day_for_pickup': pickupdict['day_for_pickup'],
+                    'hour_for_pickup': pickupdict['hour_for_pickup'],
+                    'message': "The user has already chosen a pickup time."
+                  }
+                self.response.write(json.dumps(result))
+            else:
+                self.response.headers.add_header('Content-Type', 'application/json')
+                result = {
+                    'redirectToLogin': 0,
+                    'day_for_pickup': "",
+                    'hour_for_pickup': "",
+                    'message': "A pickup time has not been chosen yet."
+                  }
+                self.response.write(json.dumps(result))
+        else:
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 1,
+                'message': "The user hasn't logged in or the cookie is incorrect. Redirect user to login page."
+              }
+            self.response.write(json.dumps(result))
+
 class PickupHourHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('pickuphour.html').render())
@@ -722,6 +768,32 @@ class PickupHourHandler(webapp3.RequestHandler):
 class ConfirmPickupHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('confirmpickup.html').render())
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        day_for_pickup = self.request.get("day_for_pickup")
+        hour_for_pickup = self.request.get("hour_for_pickup")
+        if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+            doc_ref = db.collection('users').document(username)
+            doc_ref.set({
+                'day_for_pickup': day_for_pickup,
+                'hour_for_pickup': hour_for_pickup
+            }, merge=True)
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 0,
+                'day_for_pickup': day_for_pickup,
+                'hour_for_pickup': hour_for_pickup,
+                'message': "Pickup time registered successfully."
+              }
+            self.response.write(json.dumps(result))
+        else:
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 1,
+                'message': "The user hasn't logged in or the cookie is incorrect. Redirect user to login page."
+              }
+            self.response.write(json.dumps(result))
 
 class ReadyForPickupHandler(webapp3.RequestHandler):
     def get(self):
@@ -743,9 +815,44 @@ class HospitalInfoHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('hospitalinfo.html').render())
 
-class ManifestJsonHandler(webapp3.RequestHandler):
+class DashboardHandler(webapp3.RequestHandler):
     def get(self):
-        self.response.out.write(jinja_env.get_template('manifest.json').render())
+        self.response.out.write(jinja_env.get_template('dashboard.html').render())
+
+class SubscribeToPushHandler(webapp3.RequestHandler):
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        endpoint = self.request.get("endpoint")
+        p256dh = self.request.get("p256dh")
+        auth = self.request.get("auth")
+        if db.collection('users'):
+            if db.collection('users').document(username).get().exists:
+                if len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2:
+                    if password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+                        doc_ref = db.collection('users').document(username)
+                        doc_ref.set({
+                            'endpoint': endpoint,
+                            'p256dh': p256dh,
+                            'auth': auth
+                        }, merge=True)
+                        self.response.headers.add_header('Content-Type', 'application/json')
+                        result = {
+                            'message': "The user has subscribed to the push notifications successfully"
+                          }
+                        self.response.write(json.dumps(result))
+                    else:
+                        self.response.write("The password hash memorized in the cookie doesn't match.")
+                        self.response.set_status(400, "The password hash memorized in the cookie doesn't match.")
+                else:
+                    self.response.write("The signup process must be completed before logging in.")
+                    self.response.set_status(400, "The signup process must be completed before logging in.")
+            else:
+                self.response.write("The username you entered doesn't exist.")
+                self.response.set_status(400, "The username you entered doesn't exist.")
+        else:
+            self.response.write("The username you entered doesn't exist.")
+            self.response.set_status(400, "The username you entered doesn't exist.")
 
 def render_str(template, **params):
                 t = jinja_env.get_template(template)
@@ -766,8 +873,8 @@ class LoginHandler(Handler):
                 username = self.request.get("username")
                 password = self.request.get("password")
                 if username == "":
-                    self.response.write("Inserisci lo username.")
-                    self.response.set_status(400, "Inserisci lo username.")
+                    self.response.write("Enter the username.")
+                    self.response.set_status(400, "Enter the username.")
                 else:
                     if db.collection('users'):
                         if db.collection('users').document(username).get().exists:
@@ -776,21 +883,21 @@ class LoginHandler(Handler):
                                     self.response.headers.add_header("Set-Cookie", "userid=%s; Path=/"%(username+"|"+db.collection('users').document(username).get({'password'}).to_dict()['password']))
                                     self.response.headers.add_header('Content-Type', 'application/json')
                                     result = {
-                                        'message': 'Accesso utente effettuato con successo.'
+                                        'message': 'User logged in successfully.'
                                       }
                                     self.response.write(json.dumps(result))
                                 else:
-                                    self.response.write("La password inserita è sbagliata.")
-                                    self.response.set_status(400, "La password inserita è sbagliata.")
+                                    self.response.write("The password you entered is wrong.")
+                                    self.response.set_status(400, "The password you entered is wrong.")
                             else:
-                                self.response.write("È necessario completare la registrazione prima di accedere.")
-                                self.response.set_status(400, "È necessario completare la registrazione prima di accedere.")
+                                self.response.write("The signup process must be completed before logging in.")
+                                self.response.set_status(400, "The signup process must be completed before logging in.")
                         else:
-                            self.response.write("Lo username inserito non esiste.")
-                            self.response.set_status(400, "Lo username inserito non esiste.")
+                            self.response.write("The username you entered doesn't exist.")
+                            self.response.set_status(400, "The username you entered doesn't exist.")
                     else:
-                        self.response.write("Lo username inserito non esiste.")
-                        self.response.set_status(400, "Lo username inserito non esiste.")
+                        self.response.write("The username you entered doesn't exist.")
+                        self.response.set_status(400, "The username you entered doesn't exist.")
 
 class CheckLoginHandler(Handler):
         def post(self):
@@ -800,14 +907,14 @@ class CheckLoginHandler(Handler):
                     self.response.headers.add_header('Content-Type', 'application/json')
                     result = {
                         'redirectToLogin': 0,
-                        'message': "L'utente ha già eseguito l'accesso. Rimanda utente alla pagina di ritiro."
+                        'message': "The user has already logged in. Redirect user to pickup page."
                       }
                     self.response.write(json.dumps(result))
                 else:
                     self.response.headers.add_header('Content-Type', 'application/json')
                     result = {
                         'redirectToLogin': 1,
-                        'message': "L'utente non ha eseguito l'accesso o il cookie non è corretto. Rimanda utente alla pagina di accesso."
+                        'message': "The user hasn't logged in or the cookie is incorrect. Redirect user to login page."
                       }
                     self.response.write(json.dumps(result))
 
@@ -852,6 +959,7 @@ app = webapp3.WSGIApplication([
         ('/recoverysuccess', RecoverySuccessHandler),
         ('/profile', ProfileHandler),
         ('/pickup', PickupHandler),
+        ('/checkpickup', CheckPickupHandler),
         ('/pickuphour', PickupHourHandler),
         ('/confirmpickup', ConfirmPickupHandler),
         ('/readyforpickup', ReadyForPickupHandler),
@@ -859,6 +967,7 @@ app = webapp3.WSGIApplication([
         ('/settings', SettingsHandler),
         ('/calendar', CalendarHandler),
         ('/hospitalinfo', HospitalInfoHandler),
-        ('/manifest.json', ManifestJsonHandler),
+        ('/subscribetopush', SubscribeToPushHandler),
+        ('/dashboard', DashboardHandler),
         (r'/static/(.+)', StaticFileHandler)
 ], debug = True)
