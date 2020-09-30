@@ -1011,3 +1011,84 @@ $duration: 25s;
 .row {
   margin-top: 90px;
 }
+
+#bluebox {
+  animation: box 1s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes box {
+  from {
+    transform: rotateX(0deg);
+  } to {
+    transform: rotateX(40deg);
+  }
+}
+
+#bigshine {
+  animation: bigshine 1s ease-in-out infinite alternate;
+}
+
+@keyframes bigshine {
+  from {
+    transform: translateX(0) translateY(0);
+  } to {
+    transform: translateX(-15px) translateY(-15px);
+  }
+}
+
+#smallshine {
+  animation: smallshine 1s ease-in-out infinite alternate;
+}
+
+@keyframes smallshine {
+  from {
+    transform: translateX(0) translateY(0);
+  } to {
+    transform: translateX(15px) translateY(-15px);
+  }
+}
+
+#pill {
+  animation: pill 1s ease-in-out infinite alternate;
+}
+
+@keyframes pill {
+  from {
+    transform: translateX(0) translateY(0);
+  } to {
+    transform: translateX(15px) translateY(-15px);
+  }
+}
+
+#bottle {
+  animation: bottle 1s ease-in-out infinite alternate;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes bottle {
+  from {
+    transform: rotateZ(0deg);
+  } to {
+    transform: rotateZ(20deg);
+  }
+}
+
+#tablet {
+  animation: tablet 15s infinite linear;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes tablet {
+  from {
+    transform: rotateZ(0deg);
+  } to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.mdc-card {
+  border-top-color: coral;
+}

@@ -1,5 +1,10 @@
 .DS_Store
+__pycache__
 app.yaml
 unlock490firebase-firebase-adminsdk-68d2x-c3d8e0d547.json
 emailpassword.txt
 semysmskey.txt
+vapid_private.pem
+vapid_public.pem
+private_key.txt
+public_key.txt

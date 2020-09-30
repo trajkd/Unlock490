@@ -84,42 +84,56 @@ def valid_pw(name, pw, h):
     if make_pw_hash(name, pw, h.split(",")[1]) == h:
         return True
 
+from pywebpush import webpush, WebPushException
+from datetime import timezone
+import datetime
+import time
+import math
+  
+dt = datetime.datetime.now()
+utc_time = dt.replace(tzinfo = timezone.utc) 
+utc_timestamp = utc_time.timestamp()
+ 
+VAPID_PRIVATE_KEY = open("private_key.txt", "r").readline().strip("\n")
+VAPID_PUBLIC_KEY = open("public_key.txt", "r").read().strip("\n")
+
+def push_notification(endpoint, p256dh, auth):
+    VAPID_CLAIMS = {
+        "aud": '/'.join((endpoint.split('/'))[:3]),  
+        "exp": math.floor(utc_timestamp / 1000) + (12 * 60 * 60),
+        "sub": "mailto:hello@unlock490.com"
+    }
+    webpush(
+        subscription_info={"endpoint": endpoint, "keys": {"p256dh": p256dh, "auth": auth}},
+        data=json.dumps({
+            "notification": {
+            "title": "Hai 1 terapia da ritirare oggi",
+            "body": "Recati al centro ospedaliero entro le xx:xx per ritirarla",
+            "icon": 'images/900x900.svg',
+            "vibrate": [100, 50, 100],
+            "data": { "primaryKey": 1 },
+            "actions": [
+                {"action": "explore", "title": "Apri pagina di ritiro", "icon": "static/img/boxwithpin.svg"},
+                {"action": "close", "title": "Ignora", "icon": "static/img/close.svg"},
+            ]
+        }}),
+        vapid_private_key=VAPID_PRIVATE_KEY,
+        vapid_claims=VAPID_CLAIMS
+    )
+
+from apscheduler.schedulers.background import BackgroundScheduler
+scheduler = BackgroundScheduler()
+all_users_ref = db.collection('users').stream()
+for user in all_users_ref:
+    user_dict = user.to_dict()
+    if 'endpoint' in user_dict and 'p256dh' in user_dict and 'auth' in user_dict:
+        subscription_info_dict = db.collection('users').document(user.id).get({'endpoint', 'p256dh', 'auth'}).to_dict()
+        scheduler.add_job(push_notification, 'interval', args=[subscription_info_dict['endpoint'], subscription_info_dict['p256dh'], subscription_info_dict['auth']], seconds=5)
+scheduler.start()
+
 class MainPage(webapp3.RequestHandler):
         def get(self):
             self.response.out.write(jinja_env.get_template('base.html').render())
-        def post(self, username="", email="", username_error="", password_error="", verify_error="", email_error="", ):
-                username = self.request.get("username")
-                password = self.request.get("password")
-                verify = self.request.get("verify")
-                email = self.request.get("email")
-                if (valid_username(username) and valid_password(password) and valid_email(email) and password == verify):
-                        #if len(db.Query(User).filter("username =", username).fetch(limit=1))==0:
-                        if len(query_authors(username))==0:
-                                password = make_pw_hash(username, password)
-                                #u = User(username=username, password=password, email=email)
-                                #u.put()
-                                dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-                                table = dynamodb.Table('Author')
-                                table.put_item(
-                                    Item={
-                                        'username': username,
-                                        'password': password,
-                                        'email': email
-                                    }
-                                )
-                                #self.response.headers.add_header("Set-Cookie", "userid=%s; Path=/"%(str(u.key().id())+"|"+u.password))
-                                self.response.headers.add_header("Set-Cookie", "userid=%s; Path=/"%(username+"|"+password))
-                                self.redirect("/")
-                        else:
-                                self.write_form(username_error="That user already exists.")
-                if not valid_username(username):
-                        username_error = "That's not a valid username."
-                if not valid_password(password):
-                        password_error = "That's not a valid password."
-                if not password == verify:
-                        verify_error = "Your passwords didn't match."
-                if not valid_email(email):
-                        email_error = "That's not a valid email."
 
 class SignupHandler(webapp3.RequestHandler):
         def write_form(self, username="", email="", username_error="", password_error="", verify_error="", email_error=""):
@@ -715,6 +729,38 @@ class PickupHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('pickup.html').render())
 
+class CheckPickupHandler(webapp3.RequestHandler):
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+            pickupdict = db.collection('users').document(username).get({'day_for_pickup', 'hour_for_pickup'}).to_dict()
+            if len(pickupdict) == 2:
+                self.response.headers.add_header('Content-Type', 'application/json')
+                result = {
+                    'redirectToLogin': 0,
+                    'day_for_pickup': pickupdict['day_for_pickup'],
+                    'hour_for_pickup': pickupdict['hour_for_pickup'],
+                    'message': "L'utente ha già scelto un orario di ritiro."
+                  }
+                self.response.write(json.dumps(result))
+            else:
+                self.response.headers.add_header('Content-Type', 'application/json')
+                result = {
+                    'redirectToLogin': 0,
+                    'day_for_pickup': "",
+                    'hour_for_pickup': "",
+                    'message': "Non è ancora stato scelto un orario di ritiro."
+                  }
+                self.response.write(json.dumps(result))
+        else:
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 1,
+                'message': "L'utente non è loggato o il cookie è incorretto. Rimanda l'utente alla pagina di accesso."
+              }
+            self.response.write(json.dumps(result))
+
 class PickupHourHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('pickuphour.html').render())
@@ -722,6 +768,32 @@ class PickupHourHandler(webapp3.RequestHandler):
 class ConfirmPickupHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('confirmpickup.html').render())
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        day_for_pickup = self.request.get("day_for_pickup")
+        hour_for_pickup = self.request.get("hour_for_pickup")
+        if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+            doc_ref = db.collection('users').document(username)
+            doc_ref.set({
+                'day_for_pickup': day_for_pickup,
+                'hour_for_pickup': hour_for_pickup
+            }, merge=True)
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 0,
+                'day_for_pickup': day_for_pickup,
+                'hour_for_pickup': hour_for_pickup,
+                'message': "Orario di ritiro registrato con successo."
+              }
+            self.response.write(json.dumps(result))
+        else:
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 1,
+                'message': "L'utente non è loggato o il cookie è incorretto. Rimanda l'utente alla pagina di accesso."
+              }
+            self.response.write(json.dumps(result))
 
 class ReadyForPickupHandler(webapp3.RequestHandler):
     def get(self):
@@ -743,9 +815,44 @@ class HospitalInfoHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('hospitalinfo.html').render())
 
-class ManifestJsonHandler(webapp3.RequestHandler):
+class DashboardHandler(webapp3.RequestHandler):
     def get(self):
-        self.response.out.write(jinja_env.get_template('manifest.json').render())
+        self.response.out.write(jinja_env.get_template('dashboard.html').render())
+
+class SubscribeToPushHandler(webapp3.RequestHandler):
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        endpoint = self.request.get("endpoint")
+        p256dh = self.request.get("p256dh")
+        auth = self.request.get("auth")
+        if db.collection('users'):
+            if db.collection('users').document(username).get().exists:
+                if len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2:
+                    if password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+                        doc_ref = db.collection('users').document(username)
+                        doc_ref.set({
+                            'endpoint': endpoint,
+                            'p256dh': p256dh,
+                            'auth': auth
+                        }, merge=True)
+                        self.response.headers.add_header('Content-Type', 'application/json')
+                        result = {
+                            'message': "L'utente si è sottoscritto alle notifiche push con successo."
+                          }
+                        self.response.write(json.dumps(result))
+                    else:
+                        self.response.write("La password hash memorizzata nel cookie non corrisponde.")
+                        self.response.set_status(400, "La password hash memorizzata nel cookie non corrisponde.")
+                else:
+                    self.response.write("Il processo di registrazione deve essere completato prima di accedere.")
+                    self.response.set_status(400, "Il processo di registrazione deve essere completato prima di accedere.")
+            else:
+                self.response.write("Lo username inserito non esiste.")
+                self.response.set_status(400, "Lo username inserito non esiste.")
+        else:
+            self.response.write("The username you entered doesn't exist.")
+            self.response.set_status(400, "Lo username inserito non esiste.")
 
 def render_str(template, **params):
                 t = jinja_env.get_template(template)
@@ -852,6 +959,7 @@ app = webapp3.WSGIApplication([
         ('/recoverysuccess', RecoverySuccessHandler),
         ('/profile', ProfileHandler),
         ('/pickup', PickupHandler),
+        ('/checkpickup', CheckPickupHandler),
         ('/pickuphour', PickupHourHandler),
         ('/confirmpickup', ConfirmPickupHandler),
         ('/readyforpickup', ReadyForPickupHandler),
@@ -859,6 +967,7 @@ app = webapp3.WSGIApplication([
         ('/settings', SettingsHandler),
         ('/calendar', CalendarHandler),
         ('/hospitalinfo', HospitalInfoHandler),
-        ('/manifest.json', ManifestJsonHandler),
+        ('/subscribetopush', SubscribeToPushHandler),
+        ('/dashboard', DashboardHandler),
         (r'/static/(.+)', StaticFileHandler)
 ], debug = True)
