@@ -10,7 +10,7 @@ var filesToCache = [
 '/profile',
 '/settings',
 '/calendar',
-'/static/css/clean-blog.css',
+//'/static/css/clean-blog.css',
 '/static/css/nav.css',
 '/static/css/waves.css',
 '/static/img/locked.svg',

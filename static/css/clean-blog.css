@@ -4,6 +4,10 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-clean-blog/blob/master/LICENSE)
  */
 
+ :root {
+  --mdc-theme-primary: #0048af;
+ }
+
 body {
   font-size: 20px;
   color: #343a40;
@@ -1090,5 +1094,91 @@ $duration: 25s;
 }
 
 .mdc-card {
-  border-top-color: coral;
+  font-size: 32px;
+  margin: 5px;
+}
+
+.mdc-card:after {
+  position: absolute;
+  content: '';
+  height: 4px;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.availability:after {
+  background: #0048af;
+}
+
+.patients:after {
+  background: grey;
+}
+
+.pickedup:after {
+  background: green;
+}
+
+.not-pickedup:after {
+  background: red;
+}
+
+.mdc-form-field {
+  font-size: 28px;
+  height: 435px;
+  overflow-y: scroll;
+}
+
+.mdc-content {
+  margin-top: 45px;
+}
+
+.mdc-checkbox .mdc-checkbox__background {
+  top: 16px;
+}
+
+.mdc-checkbox__background {
+  width: 24px;
+  height: 24px;
+}
+
+.mdc-tab-scroller__scroll-area {
+  overflow-x: scroll;
+}
+
+.mdc-form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.mdc-checkbox .mdc-checkbox__native-control {
+  top: 7px;
+  left: 3px;
+}
+
+.mdc-tab {
+  font-size: 20px;
+}
+
+.mdc-button {
+  font-size: 20px;
+}
+
+.mdc-tab--active {
+  font-weight: 700;
+}
+
+.mdc-card__media-content {
+  margin: 10px;
+}
+
+.mdc-data-table {
+  margin-top: 85px;
+  height: 450px;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+.mdc-data-table__header-cell {
+  font-weight: 700;
 }
