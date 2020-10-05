@@ -725,6 +725,10 @@ class ProfileHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('profile.html').render())
 
+class StartPickupHandler(webapp3.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('startpickup.html').render())
+
 class PickupHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('pickup.html').render())
@@ -798,6 +802,30 @@ class ConfirmPickupHandler(webapp3.RequestHandler):
 class ReadyForPickupHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('readyforpickup.html').render())
+
+class UndoPickupHandler(webapp3.RequestHandler):
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+            doc_ref = db.collection('users').document(username)
+            doc_ref.update({
+                'day_for_pickup': firestore.DELETE_FIELD,
+                'hour_for_pickup': firestore.DELETE_FIELD
+            })
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 0,
+                'message': "Orario di ritiro registrato con successo."
+              }
+            self.response.write(json.dumps(result))
+        else:
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 1,
+                'message': "L'utente non è loggato o il cookie è incorretto. Rimanda l'utente alla pagina di accesso."
+              }
+            self.response.write(json.dumps(result))
 
 class GuideHandler(webapp3.RequestHandler):
     def get(self):
@@ -958,11 +986,13 @@ app = webapp3.WSGIApplication([
         ('/choosenewpassword', ChooseNewPasswordHandler),
         ('/recoverysuccess', RecoverySuccessHandler),
         ('/profile', ProfileHandler),
+        ('/startpickup', StartPickupHandler),
         ('/pickup', PickupHandler),
         ('/checkpickup', CheckPickupHandler),
         ('/pickuphour', PickupHourHandler),
         ('/confirmpickup', ConfirmPickupHandler),
         ('/readyforpickup', ReadyForPickupHandler),
+        ('/undopickup', UndoPickupHandler),
         ('/guide', GuideHandler),
         ('/settings', SettingsHandler),
         ('/calendar', CalendarHandler),

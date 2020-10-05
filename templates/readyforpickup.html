@@ -1,7 +1,7 @@
 <div id="nav">
     <div></div>
     <h1 id="sectiontitle">Ritiro prenotato</h1>
-    <div></div>
+    <div><a href="#tutorial"><i class="far fa-question-circle"></i></a></div>
 </div>
 <div id="hospitalDetails">
     <div id="hospitalNameAddress">
@@ -11,11 +11,14 @@
     <button class="btn2" id="infoButton" type="button">INFO</button>
 </div>
 <p>Orario scelto</p>
-<p><b>8 Febbraio 2021</b></p>
-<p><b>13:30</b></p>
+<p><b><span id="day-for-pickup"></span></b></p>
+<p><b><span id="hour-for-pickup"></span></b></p>
 <div id="pickupcode">
     <p>Mostra il QR Code</p>
     <img src="../static/img/qrcode.png" style="width: 80vw">
     <p>opppure digita il codice</p>
     <p><b>AXY247WEKST</b></p>
+</div>
+<div>
+    <h4><a href="#pickup" id="undopickup">Annulla ritiro</a></h4>
 </div>

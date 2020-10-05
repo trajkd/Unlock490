@@ -1182,3 +1182,38 @@ $duration: 25s;
 .mdc-data-table__header-cell {
   font-weight: 700;
 }
+
+.fa-question-circle {
+  -webkit-text-stroke: 2.5px white;
+  font-size: 37px;
+  margin-top: -10px;
+  margin-bottom: -2px;
+  top: 2px;
+  position: relative;
+  color: black;
+}
+.fa-question-circle:hover {
+  filter: invert(100%);
+  color: black;
+  background-color: white;
+  border-radius: 25px;
+  -webkit-text-stroke: 3.3px white;
+  font-size: 35px;
+  margin: -10px 1px 0;
+}
+
+.btn-primary + .btn-primary {
+  margin-top: 5px;
+}
+
+.finalchoice .btn-primary + .finalchoice .btn-primary {
+  margin-left: 5px;
+}
+
+.btn-primary {
+  border-radius: 10px;
+}
+
+#login-title {
+  text-align: left;
+}

@@ -1,7 +1,7 @@
 <div id="nav">
     <div><a href="#settings" id="back"><i class="fas fa-arrow-left"></i></a></div>
-    <h1 id="sectiontitle">Informazioni personali</h1>
-    <div></div>
+    <h1 id="sectiontitle">Informazioni</h1>
+    <div><a href="#tutorial"><i class="far fa-question-circle"></i></a></div>
 </div>
 <div id="profileDetails">
     <div id="profileNameCF">
@@ -19,4 +19,71 @@
         <p class="description">Via A. Cardarelli 9, 80131 Napoli</p>
     </div>
     <button class="btn2" id="infoButton" type="button">INFO</button>
+</div>
+<br>
+<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title panel-title1">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+        Lingua <i class="fas fa-angle-down"></i></a>
+      </h4>
+    </div>
+    <div id="collapse1" class="panel-collapse collapse">
+      <ul class="list-group">
+        <li class="list-group-item active-item">Italiano</li>
+        <li class="list-group-item">Inglese</li>
+        <li class="list-group-item">Tedesco</li>
+        <li class="list-group-item">Francese</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title panel-title2">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+        Notifiche <i class="fas fa-angle-down"></i></a>
+      </h4>
+    </div>
+    <div id="collapse2" class="panel-collapse collapse">
+      <br>
+      <button class="btn btn-primary available-hour" id="available-hour1" type="button">Cronologia</button>
+      <br>
+      <br>
+      <h5>Push</h5>
+      <ul class="list-group">
+        <li class="list-group-item active-item">Attiva</li>
+        <li class="list-group-item">Disattiva</li>
+      </ul>
+      <br>
+      <h5>Email</h5>
+      <ul class="list-group">
+        <li class="list-group-item active-item">Attiva</li>
+        <li class="list-group-item">Disattiva</li>
+      </ul>
+      <br>
+      <h5>SMS</h5>
+      <ul class="list-group">
+        <li class="list-group-item active-item">Attiva</li>
+        <li class="list-group-item">Disattiva</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title panel-title3">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+        Credits <i class="fas fa-angle-down"></i></a>
+      </h4>
+    </div>
+    <div id="collapse3" class="panel-collapse collapse">
+      <div class="panel-body"><p>Web app creata dal team1 per il Codemotion <a href="https://events.codemotion.com/hackathons/devs-for-health-hiv/home/">Devs for Health in HIV</a> hackathon 2020.</p><p>Icone realizzate da <a href="http://www.freepik.com/" title="Freepik">Freepik</a>, <a href="https://www.flaticon.com/free-icon/vitamin_3047656" title="Linector">Linector</a>, <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a> e <a href="https://www.flaticon.com/authors/xnimrodx" title="xnimrodx">xnimrodx</a> su <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>.</p></div>
+    </div>
+  </div>
+  <div>
+    <h4><a href="#choosenewpassword" id="choosenewpassword">Cambia password <i class="fas fa-key"></i></a></h4>
+  </div>
+  <div>
+    <h4><a href="#logout" id="logout">Logout <i class="fas fa-sign-out-alt"></i></a></h4>
+  </div>
 </div>

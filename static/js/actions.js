@@ -34,7 +34,7 @@ $(window).on('load', function() {
                                             location.hash = "#readyforpickup";
                                         } else {
                                             $("#loader").hide();
-                                            location.hash = "#pickup";
+                                            location.hash = "#startpickup";
                                         }
                                     }
                                 },
@@ -50,25 +50,31 @@ $(window).on('load', function() {
                             location.hash = "#login";
                         }
                     } else {
-                        location.hash = "#tutorial";
-                        $.ajax($('.container').load("/tutorial")).done(function() {
-                            $("#loader").hide();
-                        });
+                        // location.hash = "#tutorial";
+                        // $.ajax($('.container').load("/tutorial")).done(function() {
+                        //     $("#loader").hide();
+                        // });
+                        $("#loader").hide();
+                        location.hash = "#login";
                     }
                     return false;
                 }
             });
         } else {
-            location.hash = "#tutorial";
-            $.ajax($('.container').load("/tutorial")).done(function() {
-                $("#loader").hide();
-            });
+            // location.hash = "#tutorial";
+            // $.ajax($('.container').load("/tutorial")).done(function() {
+            //     $("#loader").hide();
+            // });
+            $("#loader").hide();
+            location.hash = "#login";
         }
     } else {
-        location.hash = "#tutorial";
-        $.ajax($('.container').load("/tutorial")).done(function() {
-            $("#loader").hide();
-        });
+        // location.hash = "#tutorial";
+        // $.ajax($('.container').load("/tutorial")).done(function() {
+        //     $("#loader").hide();
+        // });
+        $("#loader").hide();
+        location.hash = "#login";
     }
 });
 
@@ -148,6 +154,7 @@ function getContent(fragmentId, callback){
     verifyphoneforrecovery: "/verifyphoneforrecovery",
     choosenewpassword: "/choosenewpassword",
     recoverysuccess: "/recoverysuccess",
+    startpickup: "/startpickup",
     pickup: "/pickup",
     pickuphour: "/pickuphour",
     confirmpickup: "/confirmpickup",
@@ -172,7 +179,7 @@ function loadContent(){
             window.scrollTo(0, 0);
             footer();
             var fragmentId = location.hash.substr(1);
-            if (fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "settings" || fragmentId === "calendar") {
+            if (fragmentId === "startpickup" || fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "settings" || fragmentId === "calendar") {
                 $("#loader").show();
                 cookie_value = getCookie("userid");
                 if (cookie_value !== "") {
@@ -219,13 +226,13 @@ function loadContent(){
                 $('.calendar').css('font-weight', '900');
                 $('.calendar').css('font-size', '17px');
             }
-            if (fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "pickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo") {
+            if (fragmentId === "startpickup" || fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "pickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo") {
                 $('.pickup').css('font-weight', '900');
                 $('.pickup').css('font-size', '17px');
             }
             if (fragmentId === "settings" || fragmentId === "guide" || fragmentId === "profile") {
-                $('.settings').css('font-weight', '900');
-                $('.settings').css('font-size', '17px');
+                $('.profile').css('font-weight', '900');
+                $('.profile').css('font-size', '17px');
             }
 
             if (fragmentId === "home" || fragmentId === "login") {
@@ -593,7 +600,7 @@ $(document).on("click touch", "#loginButton", function() {
                                 location.hash = "#readyforpickup";
                             } else {
                                 $("#loader").hide();
-                                location.hash = "#pickup";
+                                location.hash = "#startpickup";
                             }
                         }
                     },
@@ -616,6 +623,11 @@ $(document).on("click touch", "#loginButton", function() {
         }
     });
 
+    return false;
+});
+
+$(document).on("click touch", "#startButton", function() {
+    location.hash = "#pickup";
     return false;
 });
 
@@ -753,12 +765,12 @@ $(document).on("click touch", "#toLogin", function() {
     return false;
 });
 
-$(document).on("click touch", "#profile", function() {
-    location.hash = "#profile";
-    return false;
-});
+// $(document).on("click touch", "#profile", function() {
+//     location.hash = "#profile";
+//     return false;
+// });
 
-$(document).on("click touch", "#pickup", function() {
+$(document).on("click touch", ".pickup", function() {
     $("#loader").show();
     cookie_value = getCookie("userid");
     if (cookie_value !== "") {
@@ -776,7 +788,7 @@ $(document).on("click touch", "#pickup", function() {
                         location.hash = "#readyforpickup";
                     } else {
                         $("#loader").hide();
-                        location.hash = "#pickup";
+                        location.hash = "#startpickup";
                     }
                 }
             },
@@ -798,10 +810,10 @@ $(document).on("click touch", "#guide", function() {
     return false;
 });
 
-$(document).on("click touch", "#settings", function() {
-    location.hash = "#settings";
-    return false;
-});
+// $(document).on("click touch", "#settings", function() {
+//     location.hash = "#settings";
+//     return false;
+// });
     // $.ajax({
     //     url: '/emailphonesignup',
     //     type: 'post',
@@ -911,6 +923,36 @@ $(document).on("click touch", ".available-hour", function() {
     return false;
 });
 
+// $(document).on("click touch", "#startButton", function() {
+//     $("#loader").show();
+//     cookie_value = getCookie("userid");
+//     if (cookie_value !== "") {
+//         $.ajax({
+//             url: '/confirmpickup',
+//             dataType: 'json',
+//             method: 'POST',
+//             data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1], day_for_pickup: day_for_pickup, hour_for_pickup: hour_for_pickup},
+//             success: function(res) {
+//                 $("#loader").hide();
+//                 if (!res.redirectToLogin) {
+//                     location.hash = "#readyforpickup";
+//                 } else {
+//                     location.hash = "#login"
+//                 }
+//             },
+//             error: function(error) {
+//                 $("#loader").hide();
+//                 $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+//                 $("#messageModalContent").html(error.responseText)
+//                 $("#messageModal").modal("show");
+//             }
+//         });
+//     } else {
+//         location.hash = "#login";
+//     }
+//     return false;
+// });
+
 $(document).on("click touch", "#confirmpickupButton", function() {
     $("#loader").show();
     cookie_value = getCookie("userid");
@@ -922,7 +964,11 @@ $(document).on("click touch", "#confirmpickupButton", function() {
             data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1], day_for_pickup: day_for_pickup, hour_for_pickup: hour_for_pickup},
             success: function(res) {
                 $("#loader").hide();
-                location.hash = "#readyforpickup";
+                if (!res.redirectToLogin) {
+                    location.hash = "#readyforpickup";
+                } else {
+                    location.hash = "#login"
+                }
             },
             error: function(error) {
                 $("#loader").hide();
@@ -942,55 +988,38 @@ $(document).on("click touch", "#modifypickupButton", function() {
     return false;
 });
 
-$(document).on("click touch", "#skipButton", function() {
+$(document).on("click touch", "#undopickup", function() {
     $("#loader").show();
     cookie_value = getCookie("userid");
     if (cookie_value !== "") {
         $.ajax({
-            url: '/checklogin',
+            url: '/undopickup',
             dataType: 'json',
             method: 'POST',
             data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
             success: function(res) {
                 $("#loader").hide();
                 if (!res.redirectToLogin) {
-                    location.hash = "#settings";
+                    location.hash = "#startpickup";
                 } else {
-                    location.hash = "#login";
+                    location.hash = "#login"
                 }
-                return false;
+            },
+            error: function(error) {
+                $("#loader").hide();
+                $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                $("#messageModalContent").html(error.responseText)
+                $("#messageModal").modal("show");
             }
         });
     } else {
-        $("#loader").hide();
         location.hash = "#login";
     }
     return false;
 });
 
-$(document).on("click touch", "#closetutorial", function() {
-    $("#loader").show();
-    cookie_value = getCookie("userid");
-    if (cookie_value !== "") {
-        $.ajax({
-            url: '/checklogin',
-            dataType: 'json',
-            method: 'POST',
-            data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
-            success: function(res) {
-                $("#loader").hide();
-                if (!res.redirectToLogin) {
-                    location.hash = "#settings";
-                } else {
-                    location.hash = "#login";
-                }
-                return false;
-            }
-        });
-    } else {
-        $("#loader").hide();
-        location.hash = "#login";
-    }
+$(document).on("click touch", "#skipButton", function() {
+    window.history.go(-1);
     return false;
 });
 
@@ -1034,7 +1063,7 @@ $(document).on("click touch", "#choosenewpassword", function() {
     return false;
 });
 
-$(document).on("click touch", "#calendar", function() {
+$(document).on("click touch", ".calendar", function() {
     location.hash = "#calendar";
     return false;
 });
