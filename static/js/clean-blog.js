@@ -29,3 +29,51 @@ function footer() {
 
 footer();
 $(window).resize(footer);
+
+function scaleCalendar() {
+  if (window.innerWidth < 700) {
+    let perpx = 0.90/600;
+    let ratio = perpx * window.innerWidth;
+    $("#calendar-iframe").css('transform','scale('+ratio+')');
+  }
+  else {
+    $("#calendar-iframe").css('transform','scale(1)');
+  }
+}
+
+$(window).resize(scaleCalendar);
+
+function scaleTutorial() {
+  if (window.innerWidth > 360) {
+    let perpx = 0.90 - (0.1*(window.innerWidth - 360)/50);
+    // if (window.innerWidth > 380) {
+    //   let perpx = 0.8/window.innerWidth;
+    // }
+    // if (window.innerWidth > 400) {
+    //   let perpx = 0.7/window.innerWidth;
+    // }
+    // if (window.innerWidth > 420) {
+    //   let perpx = 0.6/window.innerWidth;
+    // }
+    // if (window.innerWidth > 440) {
+    //   let perpx = 0.4/window.innerWidth;
+    // }
+    // if (window.innerWidth > 460) {
+    //   let perpx = 0.2/window.innerWidth;
+    // }
+    // if (window.innerWidth > 480) {
+    //   let perpx = 0.1/window.innerWidth;
+    // }
+    // if (window.innerWidth > 500) {
+    //   let perpx = 0.005/window.innerWidth;
+    // }
+    let ratio = perpx * 75;
+    $(".swiper-slide svg").attr('width',''+ratio+'%');
+
+  }
+  else {
+    $(".swiper-slide svg").attr('width','75%');
+  }
+}
+
+$(window).resize(scaleTutorial);

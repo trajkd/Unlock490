@@ -1,3 +1,4 @@
+
 $(document).on("click touch", "#sidebarCollapse", function() {
     $('#sidebar').toggleClass('active');
 });
@@ -140,33 +141,126 @@ function getCookie(cookiename)
 
 function getContent(fragmentId, callback){
 
-  var pages = {
-    home: "/login",
-    login: "/login",
-    tutorial: "/tutorial",
-    signup: "/signup",
-    emailphonesignup: "/emailphonesignup",
-    verifyemail: "/verifyemail",
-    verifyphone: "/verifyphone",
-    success: "/success",
-    newpassword: "/newpassword",
-    verifyemailforrecovery: "/verifyemailforrecovery",
-    verifyphoneforrecovery: "/verifyphoneforrecovery",
-    choosenewpassword: "/choosenewpassword",
-    recoverysuccess: "/recoverysuccess",
-    startpickup: "/startpickup",
-    pickup: "/pickup",
-    pickuphour: "/pickuphour",
-    confirmpickup: "/confirmpickup",
-    readyforpickup: "/readyforpickup",
-    hospitalinfo: "/hospitalinfo",
-    profile: "/profile",
-    guide: "/tutorial",
-    settings: "/settings",
-    calendar: "/calendar"
-  };
+    var pages = {
+        home: "/login",
+        login: "/login",
+        tutorial: "/tutorial",
+        signup: "/signup",
+        emailphonesignup: "/emailphonesignup",
+        verifyemail: "/verifyemail",
+        verifyphone: "/verifyphone",
+        success: "/success",
+        newpassword: "/newpassword",
+        verifyemailforrecovery: "/verifyemailforrecovery",
+        verifyphoneforrecovery: "/verifyphoneforrecovery",
+        choosenewpassword: "/choosenewpassword",
+        recoverysuccess: "/recoverysuccess",
+        startpickup: "/startpickup",
+        pickup: "/pickup",
+        pickuphour: "/pickuphour",
+        confirmpickup: "/confirmpickup",
+        readyforpickup: "/readyforpickup",
+        hospitalinfo: "/hospitalinfo",
+        profile: "/profile",
+        guide: "/tutorial",
+        settings: "/settings",
+        calendar: "/calendar",
+        pickuphistory: "/pickuphistory",
+        notificationhistory: "/notificationhistory"
+    };
 
-  callback(pages[fragmentId]);
+    callback(pages[fragmentId]);
+
+    if (fragmentId === "verifyemail") {
+        $("#email-awaiting-activation").html(email);
+    }
+    if (fragmentId === "verifyphone") {
+        $("#phone-awaiting-activation").html(phone);
+    }
+    if (fragmentId === "verifyemailforrecovery") {
+        $("#email-awaiting-verification").html(email);
+    }
+    if (fragmentId === "verifyphoneforrecovery") {
+        $("#phone-awaiting-verification").html(phone);
+    }
+    if (fragmentId === "pickuphour") {
+        $('#day-for-pickup').html(convertDate(day_for_pickup));
+    }
+    if (fragmentId === "confirmpickup") {
+        $('#day-for-pickup').html(convertDate(day_for_pickup));
+        $('#hour-for-pickup').html(convertHour(hour_for_pickup));
+    }
+    if (fragmentId === "readyforpickup") {
+        $("#loader").show();
+        cookie_value = getCookie("userid");
+        if (cookie_value !== "") {
+            $.ajax({
+                url: '/checkpickup',
+                dataType: 'json',
+                method: 'POST',
+                data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                success: function(res) {
+                    if (res.redirectToLogin) {
+                        location.hash = "#login";
+                    } else {
+                        if (res.day_for_pickup) {
+                            $('#day-for-pickup').html(convertDate(res.day_for_pickup));
+                            $('#hour-for-pickup').html(convertHour(res.hour_for_pickup));
+                            $('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+                        }
+                        $("#loader").hide();
+                    }
+                },
+                error: function(error) {
+                    $("#loader").hide();
+                    $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                    $("#messageModalContent").html(error.responseText)
+                    $("#messageModal").modal("show");
+                }
+            });
+        } else {
+            location.hash = "#login";
+        }
+    }
+    if (fragmentId === "pickuphistory") {
+        $("#loader").show();
+        cookie_value = getCookie("userid");
+        if (cookie_value !== "") {
+            $.ajax({
+                url: '/checkpickup',
+                dataType: 'json',
+                method: 'POST',
+                data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                success: function(res) {
+                    if (res.redirectToLogin) {
+                        location.hash = "#login";
+                    } else {
+                        if (res.day_for_pickup) {
+                            $('#day-for-pickup').html(convertDate(res.day_for_pickup));
+                            $('#hour-for-pickup').html(convertHour(res.hour_for_pickup));
+                            $('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+                        }
+                        $("#loader").hide();
+                    }
+                },
+                error: function(error) {
+                    $("#loader").hide();
+                    $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                    $("#messageModalContent").html(error.responseText)
+                    $("#messageModal").modal("show");
+                }
+            });
+        } else {
+            location.hash = "#login";
+        }
+        if (fragmentId === "profile") {
+            cookie_value = getCookie("userid");
+            $('#display-username').html(cookie_value.split("|")[0]);
+        }
+        if (fragmentId === "calendar" || fragmentId === "pickuphistory") {
+            scaleCalendar();
+        }
+    }
 }
 
 function loadContent(){
@@ -215,24 +309,44 @@ function loadContent(){
             } else {
                 $('.identity').css('visibility', 'visible');
             }
-            if (fragmentId === "menu" || fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "therapy" || fragmentId === "notifications" || fragmentId === "guide" || fragmentId === "settings" || fragmentId === "calendar" || fragmentId === "examplenotifications" || fragmentId === "exampletherapies") {
+            if (fragmentId === "menu" || fragmentId === "startpickup" || fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo" || fragmentId === "profile" || fragmentId === "therapy" || fragmentId === "notifications" || fragmentId === "guide" || fragmentId === "settings" || fragmentId === "calendar" || fragmentId === "pickuphistory" || fragmentId === "notificationhistory" || fragmentId === "examplenotifications" || fragmentId === "exampletherapies") {
                 $('.nav').css('visibility', 'visible');
             } else {
                 $('.nav').css('visibility', 'hidden');
             }
-            $('.nav__link').css('font-weight', 'normal');
-            $('.nav__link').css('font-size', '13px');
-            if (fragmentId === "calendar") {
-                $('.calendar').css('font-weight', '900');
-                $('.calendar').css('font-size', '17px');
+            $(".calendar path").attr("fill", "#757575");
+            $(".pickup path").attr("fill", "#757575");
+            $(".notificationhistory path").attr("fill", "#757575");
+            $(".profile path").attr("fill", "#757575");
+            $(".calendar svg").attr("width", "30px");
+            $(".pickup svg").attr("width", "30px");
+            $(".notificationhistory svg").attr("width", "30px");
+            $(".profile svg").attr("width", "30px");
+            $(".calendar").removeClass("active");
+            $(".pickup").removeClass("active");
+            $(".notificationhistory").removeClass("active");
+            $(".profile").removeClass("active");
+            if (fragmentId === "calendar" || fragmentId === "pickuphistory") {
+                scaleCalendar();
+                $(".calendar").addClass("active");
+                $(".calendar path").attr("fill", "#004AAD");
+                $(".calendar svg").attr("width", "40px");
             }
             if (fragmentId === "startpickup" || fragmentId === "pickup" || fragmentId === "pickuphour" || fragmentId === "confirmpickup" || fragmentId === "pickup" || fragmentId === "readyforpickup" || fragmentId === "hospitalinfo") {
-                $('.pickup').css('font-weight', '900');
-                $('.pickup').css('font-size', '17px');
+                $(".pickup").addClass("active");
+                $(".pickup path").attr("fill", "#004AAD");
+                $(".pickup svg").attr("width", "40px");
+            }
+            if (fragmentId === "notificationhistory") {
+                scaleCalendar();
+                $(".notificationhistory").addClass("active");
+                $(".notificationhistory path").attr("fill", "#004AAD");
+                $(".notificationhistory svg").attr("width", "40px");
             }
             if (fragmentId === "settings" || fragmentId === "guide" || fragmentId === "profile") {
-                $('.profile').css('font-weight', '900');
-                $('.profile').css('font-size', '17px');
+                $(".profile").addClass("active");
+                $(".profile path").attr("fill", "#004AAD");
+                $(".profile svg").attr("width", "50px");
             }
 
             if (fragmentId === "home" || fragmentId === "login") {
@@ -428,6 +542,7 @@ function loadContent(){
                 $('#day-for-pickup').html(convertDate(day_for_pickup));
             }
             if (fragmentId === "confirmpickup") {
+
                 document.title = 'Ritiro - Unlock490';
 
                 $('#day-for-pickup').html(convertDate(day_for_pickup));
@@ -466,6 +581,43 @@ function loadContent(){
                 } else {
                     location.hash = "#login";
                 }
+            }
+            if (fragmentId === "pickuphistory") {
+                document.title = 'Cronologia ritiri - Unlock490';
+
+                $("#loader").show();
+                cookie_value = getCookie("userid");
+                if (cookie_value !== "") {
+                    $.ajax({
+                        url: '/checkpickup',
+                        dataType: 'json',
+                        method: 'POST',
+                        data: {username: cookie_value.split("|")[0], password: cookie_value.split("|")[1]},
+                        success: function(res) {
+                            if (res.redirectToLogin) {
+                                location.hash = "#login";
+                            } else {
+                                if (res.day_for_pickup) {
+                                    $('#day-for-pickup').html(convertDate(res.day_for_pickup));
+                                    $('#hour-for-pickup').html(convertHour(res.hour_for_pickup));
+                                    $('#alert').html("<i class='fas fa-exclamation-circle'></i> Hai 1 terapia da ritirare a breve.");
+                                }
+                                $("#loader").hide();
+                            }
+                        },
+                        error: function(error) {
+                            $("#loader").hide();
+                            $("#messageModalContent").removeClass("alert-success").addClass("alert-danger");
+                            $("#messageModalContent").html(error.responseText)
+                            $("#messageModal").modal("show");
+                        }
+                    });
+                } else {
+                    location.hash = "#login";
+                }
+            }
+            if (fragmentId === "notificationhistory") {
+                document.title = 'Cronologia notifiche - Unlock490';
             }
             if (fragmentId === "hospitalinfo") {
                 document.title = 'Informazioni sul centro ospedaliero - Unlock490';
@@ -843,8 +995,8 @@ $(document).on("click touch", "#filterCurrentWeek", function() {
     $("#20210204").show();
     $("#20210205").show();
     $("#20210208").show();
-    $("#20210211").show();
-    $("#20210212").show();
+    $("#20210211").hide();
+    $("#20210212").hide();
     $("#20210213").hide();
 });
 
@@ -855,8 +1007,8 @@ $(document).on("click touch", "#filterNextWeek", function() {
     $("#20210204").hide();
     $("#20210205").hide();
     $("#20210208").hide();
-    $("#20210211").hide();
-    $("#20210212").hide();
+    $("#20210211").show();
+    $("#20210212").show();
     $("#20210213").show();
 });
 
@@ -1015,6 +1167,16 @@ $(document).on("click touch", "#undopickup", function() {
     } else {
         location.hash = "#login";
     }
+    return false;
+});
+
+$(document).on("click touch", "#pickuphistoryButton", function() {
+    location.hash = "#pickuphistory"
+    return false;
+});
+
+$(document).on("click touch", "#notificationhistoryButton", function() {
+    location.hash = "#notificationhistory"
     return false;
 });
 

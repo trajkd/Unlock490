@@ -9,20 +9,20 @@
  }
 
 body {
-  font-size: 20px;
+  font-size: 5.5vw;
   color: #343a40;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
   text-align: center;
 }
 
 p {
-  font-size: 20px;
+  font-size: 4.5vw;
   line-height: 1.5;
   margin: 30px 0;
 }
 
 p a {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 h1,
@@ -32,7 +32,7 @@ h4,
 h5,
 h6 {
   font-weight: 600;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
   color: black;
 }
 
@@ -41,6 +41,14 @@ h1 {
   border-bottom: 5px solid #0048af;
   padding-bottom: 8px;
   width: fit-content;
+}
+
+h4 {
+  font-size: 7.5vw;
+}
+
+h5 {
+  font-size: 4.5vw;
 }
 
 a {
@@ -101,6 +109,7 @@ blockquote {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 10px;
 }
 
 #sidebarCollapse {
@@ -163,7 +172,7 @@ blockquote {
     display: block;
     position: fixed;
     z-index: 1;
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Lucida Grande', sans-serif;
 }
 
 .components {
@@ -177,7 +186,7 @@ blockquote {
 }
 
 body {
-    background: #fafafa;
+    background: white;
 }
 
 a, a:hover, a:focus {
@@ -266,6 +275,11 @@ ul ul a {
 
 .logo {
   width: 80%;
+  margin-top: 10px;
+}
+
+#newpassword {
+  font-size: 5vw;
 }
 
 .tagline {
@@ -398,7 +412,7 @@ svg {
   margin: 0;
 }
 
-#profileDetails {
+#profileDetails, #pickupDetails, #readyforpickupDetails {
   position: relative;
   display: flex;
   text-align: left;
@@ -407,7 +421,28 @@ svg {
   margin-bottom: 10px;
 }
 
-#profileNameCF {
+#pickupDetails {
+  color: white;
+  background-color: #0048af;
+}
+
+#profileDetails, #readyforpickupDetails {
+  background-color: #e3f2fd;
+  border-color: #0048af;
+}
+
+#readyforpickupDetails {
+  display: block;
+  text-align: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#readyforpickupDetails p {
+  margin: 5px;
+}
+
+#profileNameCF, #dayhour {
   margin-left: 10px;
 }
 
@@ -562,7 +597,7 @@ img::-moz-selection {
   position: absolute;
   border-bottom: 1px solid #e9ecef;
   background-color: white;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 #mainNav .navbar-brand {
@@ -726,7 +761,7 @@ header.masthead .site-heading .subheading {
   line-height: 1.1;
   display: block;
   margin: 10px 0 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
   text-shadow: 0 0 20px white, 0 0 20px white, 0 0 20px white, 0 0 20px white;
 }
 
@@ -751,14 +786,14 @@ header.masthead .post-heading .subheading {
   font-size: 24px;
   font-weight: 600;
   margin: 10px 0 30px;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 header.masthead .post-heading .meta {
   font-size: 20px;
   font-weight: 300;
   font-style: italic;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 header.masthead .post-heading .meta a {
@@ -827,7 +862,7 @@ header.masthead .post-heading .meta a {
 
 .floating-label-form-group input,
 .floating-label-form-group textarea {
-  font-size: 1.5em;
+  font-size: 5.5vw;
   position: relative;
   padding: 0;
   resize: none;
@@ -836,13 +871,13 @@ header.masthead .post-heading .meta a {
   background: none;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 .floating-label-form-group input::-webkit-input-placeholder,
 .floating-label-form-group textarea::-webkit-input-placeholder {
   color: #868e96;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 .floating-label-form-group label {
@@ -868,13 +903,13 @@ header.masthead .post-heading .meta a {
   top: 0;
   opacity: 1;
   color: #0048af;
-  font-size: 20px;
+  font-size: 4.5vw;
   text-align: left;
 }
 
 .floating-label-form-group-with-focus label {
   color: #0048af;
-  font-size: 20px;
+  font-size: 4.5vw;
   text-align: left;
 }
 
@@ -900,21 +935,21 @@ div .copyright {
 
 .btn {
   width: 100%;
-  font-size: 20px;
+  font-size: 5vw;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
   border-radius: 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 .btn2 {
-  font-size: 20px;
+  font-size: 5vw;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
-  border-radius: 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  border-radius: 10px;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 .btn-primary {
@@ -1191,7 +1226,9 @@ $duration: 25s;
   top: 2px;
   position: relative;
   color: black;
+  transition: 0.8s transform;
 }
+
 .fa-question-circle:hover {
   filter: invert(100%);
   color: black;
@@ -1200,6 +1237,23 @@ $duration: 25s;
   -webkit-text-stroke: 3.3px white;
   font-size: 35px;
   margin: -10px 1px 0;
+  transition: 0.8s transform;
+}
+
+@media only screen and (max-width: 299px) {
+  .fa-question-circle {
+    transform: scale(.5);
+  }
+
+  .fa-question-circle:hover {
+    transform: scale(.5);
+  }
+
+  #tutorial {
+    position: relative;
+    top: 4px;
+    left: -10px;
+  }
 }
 
 .btn-primary + .btn-primary {
@@ -1210,10 +1264,56 @@ $duration: 25s;
   margin-left: 5px;
 }
 
-.btn-primary {
+.btn {
   border-radius: 10px;
 }
 
 #login-title {
   text-align: left;
+}
+
+#signupButton {
+  margin-top: 20px;
+}
+
+.container {
+  overflow: hidden;
+  padding-bottom: 75px;
+}
+
+#calendar-iframe {
+  transform-origin: left center;
+}
+
+.stroke-transparent {
+    -webkit-text-stroke: 1px #0048af;
+    -webkit-text-fill-color: transparent;
+    color: white;
+    font-size: 1.5em;
+}
+
+.calendar:hover .stroke-transparent, .pickup:hover .stroke-transparent, .profile:hover .stroke-transparent {
+    -webkit-text-stroke: none;
+    -webkit-text-fill-color: #0048af;
+    color: #0048af;
+}
+
+svg {
+  transition: 0.2s all;
+}
+
+.nav__link:before {
+  content: '';
+  transition: 0.2s all;
+}
+
+.nav__link.active:before {
+  position: absolute;
+  background: #0048af;
+  transform: scale(-1,-1);
+  content: '';
+  height: 2px;
+  right: 0;
+  left: 0;
+  top: 0;
 }

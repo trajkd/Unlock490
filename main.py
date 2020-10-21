@@ -839,6 +839,10 @@ class CalendarHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('calendar.html').render())
 
+class PickupHistoryHandler(webapp3.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('pickuphistory.html').render())
+
 class HospitalInfoHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('hospitalinfo.html').render())
@@ -996,6 +1000,7 @@ app = webapp3.WSGIApplication([
         ('/guide', GuideHandler),
         ('/settings', SettingsHandler),
         ('/calendar', CalendarHandler),
+        ('/pickuphistory', PickupHistoryHandler),
         ('/hospitalinfo', HospitalInfoHandler),
         ('/subscribetopush', SubscribeToPushHandler),
         ('/dashboard', DashboardHandler),
