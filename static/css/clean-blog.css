@@ -270,7 +270,8 @@ ul ul a {
 
 #alert {
   border-radius: 0 0 15px 15px;
-  background-color: red;
+  background-color: #0048af;
+  color: white;
 }
 
 .logo {
@@ -309,6 +310,11 @@ ul ul a {
   position: relative;
   display: flex;
   text-align: left;
+  justify-content: space-between;
+}
+
+#hospitalNameAddress p {
+  margin: 5px 0; 
 }
 
 .comingevent {
@@ -426,9 +432,18 @@ svg {
   background-color: #0048af;
 }
 
-#profileDetails, #readyforpickupDetails {
+#profileDetails, #readyforpickupDetails, #chosentime {
   background-color: #e3f2fd;
   border-color: #0048af;
+}
+
+#chosentime {
+  border: 3px solid #0048af;
+  border-radius: 15px;
+}
+
+#profileDetails {
+  transform: scale(0.85);
 }
 
 #readyforpickupDetails {
@@ -1316,4 +1331,61 @@ svg {
   right: 0;
   left: 0;
   top: 0;
+}
+
+#horizontal-days {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.available-day {
+  margin: 0 20px;
+}
+
+.hidden-day {
+  display: none;
+}
+
+#managepickup {
+  display: flex;
+  justify-content: space-between;
+}
+
+#pickupdayandhour {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+#managepickup {
+  border-bottom: 4px solid #0048af;
+  border-width: 100%;
+}
+
+#tutorial {
+  position: relative;
+  top: 10px;
+}
+
+.modal-dialog {
+  margin: 20px;
+}
+
+.mdc-card .fa-times {
+  position: relative;
+  bottom: 7px;
+  right: 1px;
+}
+
+.mdc-card__primary-action p {
+  margin: 0;
+}
+
+.mdc-card__action-icons .fa-times {
+  scale: .5;
+}
+
+.transparent-spacing {
+  width: 40px;
 }

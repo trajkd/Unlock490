@@ -738,13 +738,14 @@ class CheckPickupHandler(webapp3.RequestHandler):
         username = self.request.get("username")
         password = self.request.get("password")
         if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
-            pickupdict = db.collection('users').document(username).get({'day_for_pickup', 'hour_for_pickup'}).to_dict()
-            if len(pickupdict) == 2:
+            pickupdict = db.collection('users').document(username).get({'day_for_pickup', 'hour_for_pickup', 'successful_pickup_order_notification_removed'}).to_dict()
+            if len(pickupdict) == 3:
                 self.response.headers.add_header('Content-Type', 'application/json')
                 result = {
                     'redirectToLogin': 0,
                     'day_for_pickup': pickupdict['day_for_pickup'],
                     'hour_for_pickup': pickupdict['hour_for_pickup'],
+                    'successful_pickup_order_notification_removed': pickupdict['successful_pickup_order_notification_removed'],
                     'message': "L'utente ha già scelto un orario di ritiro."
                   }
                 self.response.write(json.dumps(result))
@@ -754,6 +755,7 @@ class CheckPickupHandler(webapp3.RequestHandler):
                     'redirectToLogin': 0,
                     'day_for_pickup': "",
                     'hour_for_pickup': "",
+                    'successful_pickup_order_notification_removed': "",
                     'message': "Non è ancora stato scelto un orario di ritiro."
                   }
                 self.response.write(json.dumps(result))
@@ -781,13 +783,15 @@ class ConfirmPickupHandler(webapp3.RequestHandler):
             doc_ref = db.collection('users').document(username)
             doc_ref.set({
                 'day_for_pickup': day_for_pickup,
-                'hour_for_pickup': hour_for_pickup
+                'hour_for_pickup': hour_for_pickup,
+                'successful_pickup_order_notification_removed': 0
             }, merge=True)
             self.response.headers.add_header('Content-Type', 'application/json')
             result = {
                 'redirectToLogin': 0,
                 'day_for_pickup': day_for_pickup,
                 'hour_for_pickup': hour_for_pickup,
+                'successful_pickup_order_notification_removed': 0,
                 'message': "Orario di ritiro registrato con successo."
               }
             self.response.write(json.dumps(result))
@@ -842,6 +846,33 @@ class CalendarHandler(webapp3.RequestHandler):
 class PickupHistoryHandler(webapp3.RequestHandler):
     def get(self):
         self.response.out.write(jinja_env.get_template('pickuphistory.html').render())
+
+class NotificationHistoryHandler(webapp3.RequestHandler):
+    def get(self):
+        self.response.out.write(jinja_env.get_template('notificationhistory.html').render())
+    def post(self):
+        username = self.request.get("username")
+        password = self.request.get("password")
+        successful_pickup_order_notification_removed = self.request.get("successful_pickup_order_notification_removed")
+        if db.collection('users') and db.collection('users').document(username).get().exists and len(db.collection('users').document(username).get({'email', 'phone'}).to_dict()) == 2 and password == db.collection('users').document(username).get({'password'}).to_dict()['password']:
+            doc_ref = db.collection('users').document(username)
+            doc_ref.set({
+                'successful_pickup_order_notification_removed': successful_pickup_order_notification_removed
+            }, merge=True)
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 0,
+                'successful_pickup_order_notification_removed': successful_pickup_order_notification_removed,
+                'message': "Cancellazione notifica registrata con successo."
+              }
+            self.response.write(json.dumps(result))
+        else:
+            self.response.headers.add_header('Content-Type', 'application/json')
+            result = {
+                'redirectToLogin': 1,
+                'message': "L'utente non è loggato o il cookie è incorretto. Rimanda l'utente alla pagina di accesso."
+              }
+            self.response.write(json.dumps(result))
 
 class HospitalInfoHandler(webapp3.RequestHandler):
     def get(self):
@@ -1001,6 +1032,7 @@ app = webapp3.WSGIApplication([
         ('/settings', SettingsHandler),
         ('/calendar', CalendarHandler),
         ('/pickuphistory', PickupHistoryHandler),
+        ('/notificationhistory', NotificationHistoryHandler),
         ('/hospitalinfo', HospitalInfoHandler),
         ('/subscribetopush', SubscribeToPushHandler),
         ('/dashboard', DashboardHandler),
